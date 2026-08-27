@@ -1,0 +1,555 @@
+/* =====================================================
+   P.R.O.T.E.G.E.
+   CSS - Interface principal
+   ===================================================== */
+
+
+/* =====================================================
+   CONFIGURAÇÕES GERAIS
+   ===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f2f5f8;
+    color: #17212b;
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   CABEÇALHO
+   ===================================================== */
+
+#cabecalho {
+    background: linear-gradient(
+        135deg,
+        #0d5ca8,
+        #1976d2
+    );
+
+    color: white;
+    text-align: center;
+    padding: 35px 20px 25px;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+#cabecalho h1 {
+    font-size: 42px;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+}
+
+
+#descricaoSistema {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+
+/* =====================================================
+   MENU
+   ===================================================== */
+
+#menuNavegacao ul {
+    list-style: none;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+
+#menuNavegacao a {
+    display: block;
+
+    color: white;
+
+    text-decoration: none;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+
+#menuNavegacao a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+
+    transform: translateY(-2px);
+}
+
+
+/* =====================================================
+   CONTEÚDO PRINCIPAL
+   ===================================================== */
+
+#conteudoPrincipal {
+    width: 90%;
+
+    max-width: 1100px;
+
+    margin: 40px auto;
+}
+
+
+/* =====================================================
+   SEÇÕES / CARDS
+   ===================================================== */
+
+#conteudoPrincipal section {
+    background-color: white;
+
+    border-radius: 14px;
+
+    padding: 30px;
+
+    margin-bottom: 30px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+#conteudoPrincipal h2 {
+    color: #0d5ca8;
+
+    font-size: 30px;
+
+    margin-bottom: 18px;
+}
+
+
+#conteudoPrincipal h3 {
+    color: #17212b;
+
+    font-size: 22px;
+
+    margin-bottom: 5px;
+}
+
+
+#conteudoPrincipal p {
+    margin-bottom: 15px;
+}
+
+
+/* =====================================================
+   ÁREA DE ACESSO
+   ===================================================== */
+
+#botoesAcesso {
+    display: flex;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+    margin-top: 20px;
+}
+
+
+#botoesAcesso a {
+    display: inline-block;
+
+    background-color: #0d5ca8;
+
+    color: white;
+
+    text-decoration: none;
+
+    padding: 13px 25px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+
+#botoesAcesso a:hover {
+    background-color: #08477f;
+
+    transform: translateY(-2px);
+}
+
+
+/* =====================================================
+   BOTÃO DE ASSISTÊNCIA
+   ===================================================== */
+
+#areaAssistencia {
+    border-left: 8px solid #1976d2;
+}
+
+
+#botaoAssistencia {
+    display: block;
+
+    width: 100%;
+
+    max-width: 500px;
+
+    margin: 25px auto 10px;
+
+    padding: 22px 30px;
+
+    background-color: #0d5ca8;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.18);
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+
+#botaoAssistencia:hover {
+    background-color: #08477f;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 15px rgba(0, 0, 0, 0.22);
+}
+
+
+#botaoAssistencia:active {
+    transform: translateY(1px);
+
+    box-shadow:
+        0 3px 7px rgba(0, 0, 0, 0.18);
+}
+
+
+#botaoAssistencia:disabled {
+    background-color: #8a9aaa;
+
+    cursor: wait;
+
+    transform: none;
+}
+
+
+/* =====================================================
+   MENSAGENS DO SISTEMA
+   ===================================================== */
+
+#mensagemAssistencia {
+    text-align: center;
+
+    font-weight: bold;
+
+    padding: 15px;
+
+    margin: 15px auto 0;
+
+    border-radius: 8px;
+
+    max-width: 850px;
+}
+
+
+/* Mensagem informativa */
+
+#mensagemAssistencia[data-tipo="info"] {
+    background-color: #e3f2fd;
+
+    color: #075a91;
+
+    border: 1px solid #90caf9;
+}
+
+
+/* Mensagem de sucesso */
+
+#mensagemAssistencia[data-tipo="sucesso"] {
+    background-color: #e8f5e9;
+
+    color: #1b5e20;
+
+    border: 1px solid #81c784;
+}
+
+
+/* Mensagem de emergência */
+
+#mensagemAssistencia[data-tipo="emergencia"] {
+    background-color: #ffebee;
+
+    color: #b71c1c;
+
+    border: 2px solid #e53935;
+
+    font-size: 20px;
+}
+
+
+/* Mensagem de erro */
+
+#mensagemAssistencia[data-tipo="erro"] {
+    background-color: #fff3e0;
+
+    color: #e65100;
+
+    border: 1px solid #ffb74d;
+}
+
+
+/* =====================================================
+   NÍVEIS DE ACIONAMENTO
+   ===================================================== */
+
+#listaNiveisAcionamento {
+    padding-left: 25px;
+
+    margin-top: 20px;
+}
+
+
+#listaNiveisAcionamento li {
+    margin-bottom: 25px;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    background-color: #f5f7fa;
+}
+
+
+#nivelAcionamento1 {
+    border-left: 6px solid #1976d2;
+}
+
+
+#nivelAcionamento2 {
+    border-left: 6px solid #f9a825;
+}
+
+
+#nivelAcionamento3 {
+    border-left: 6px solid #d32f2f;
+}
+
+
+/* =====================================================
+   HISTÓRICO
+   ===================================================== */
+
+#secaoHistorico {
+    overflow-x: auto;
+}
+
+
+#tabelaHistorico {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 25px;
+
+    min-width: 700px;
+}
+
+
+#tabelaHistorico caption {
+    font-size: 22px;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+
+    color: #0d5ca8;
+}
+
+
+#tabelaHistorico th {
+    background-color: #0d5ca8;
+
+    color: white;
+
+    padding: 14px;
+
+    text-align: left;
+}
+
+
+#tabelaHistorico td {
+    padding: 14px;
+
+    border-bottom: 1px solid #dce1e6;
+}
+
+
+#tabelaHistorico tbody tr:nth-child(even) {
+    background-color: #f7f9fb;
+}
+
+
+#tabelaHistorico tbody tr:hover {
+    background-color: #eef5fb;
+}
+
+
+#tabelaHistorico a {
+    color: #0d5ca8;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   SEGURANÇA
+   ===================================================== */
+
+#areaSeguranca {
+    border-left: 8px solid #d32f2f;
+}
+
+
+#areaSeguranca h2 {
+    color: #b71c1c;
+}
+
+
+/* =====================================================
+   RODAPÉ
+   ===================================================== */
+
+#rodape {
+    text-align: center;
+
+    padding: 30px 20px;
+
+    color: #52616b;
+
+    font-size: 16px;
+}
+
+
+/* =====================================================
+   RESPONSIVIDADE
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    body {
+        font-size: 17px;
+    }
+
+
+    #cabecalho {
+        padding: 25px 15px;
+    }
+
+
+    #cabecalho h1 {
+        font-size: 32px;
+    }
+
+
+    #descricaoSistema {
+        font-size: 18px;
+    }
+
+
+    #menuNavegacao ul {
+        flex-direction: column;
+
+        width: 100%;
+    }
+
+
+    #menuNavegacao li {
+        width: 100%;
+    }
+
+
+    #menuNavegacao a {
+        width: 100%;
+    }
+
+
+    #conteudoPrincipal {
+        width: 94%;
+
+        margin: 25px auto;
+    }
+
+
+    #conteudoPrincipal section {
+        padding: 22px;
+
+        margin-bottom: 20px;
+    }
+
+
+    #conteudoPrincipal h2 {
+        font-size: 26px;
+    }
+
+
+    #botaoAssistencia {
+        font-size: 21px;
+
+        padding: 20px;
+    }
+
+
+    #botoesAcesso {
+        flex-direction: column;
+    }
+
+
+    #botoesAcesso a {
+        text-align: center;
+
+        width: 100%;
+    }
+
+}

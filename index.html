@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P.R.O.T.E.G.E. — Assistência e Segurança para Idosos</title>
+    <meta name="description" content="P.R.O.T.E.G.E. é um sistema de assistência e segurança para idosos, que permite solicitar ajuda de familiares e, se necessário, de segurança/emergência.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header id="cabecalho">
+        <h1>P.R.O.T.E.G.E.</h1>
+        <p id="descricaoSistema">Sistema de assistência e segurança para idosos</p>
+
+        <nav id="menuNavegacao" aria-label="Menu principal">
+            <ul>
+                <li><a href="#areaPrincipal">Início</a></li>
+                <li><a href="#areaAssistencia">Assistência</a></li>
+                <li><a href="#areaFuncionamento">Como funciona</a></li>
+                <li><a href="#secaoHistorico">Histórico</a></li>
+                <li><a href="#areaSeguranca">Segurança</a></li>
+                <li><a id="botaoEntrar" href="#">Entrar</a></li>
+                <li><a id="botaoCriarConta" href="#">Criar conta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="conteudoPrincipal">
+
+        <!-- 2. ÁREA PRINCIPAL -->
+        <section id="areaPrincipal" aria-labelledby="tituloPrincipal">
+            <h2 id="tituloPrincipal">O que é o P.R.O.T.E.G.E.?</h2>
+            <p>
+                O P.R.O.T.E.G.E. é um sistema de assistência e segurança criado
+                especialmente para idosos. Ele permite que o idoso solicite ajuda
+                de forma simples e rápida sempre que precisar, por meio de um
+                dispositivo próprio.
+            </p>
+            <p>
+                Quando a ajuda é solicitada, o sistema avisa automaticamente os
+                familiares ou responsáveis cadastrados e, se for necessário,
+                também aciona a segurança ou o serviço de emergência.
+            </p>
+        </section>
+
+        <!-- 3. ÁREA DE ACESSO -->
+        <section id="areaAcesso" aria-labelledby="tituloAcesso">
+            <h2 id="tituloAcesso">Acesso ao sistema</h2>
+            <p>Já tem uma conta ou quer cadastrar um idoso no sistema?</p>
+            <div id="botoesAcesso">
+                <a id="botaoEntrarPrincipal" href="#" role="button">Entrar</a>
+                <a id="botaoCriarContaPrincipal" href="#" role="button">Criar conta</a>
+            </div>
+        </section>
+
+        <!-- 4. ÁREA DE ASSISTÊNCIA -->
+        <section id="areaAssistencia" aria-labelledby="tituloAssistencia">
+            <h2 id="tituloAssistencia">Solicitar assistência</h2>
+            <p>
+                O dispositivo do idoso possui um botão físico. Ao ser pressionado,
+                ele envia um pedido de ajuda junto com a localização atual do
+                idoso para as pessoas responsáveis.
+            </p>
+            <button id="botaoAssistencia" type="button">
+                Solicitar assistência
+            </button>
+        </section>
+
+        <!-- 5. ÁREA EXPLICANDO O FUNCIONAMENTO -->
+        <section id="areaFuncionamento" aria-labelledby="tituloFuncionamento">
+            <h2 id="tituloFuncionamento">Como funciona o acionamento</h2>
+            <p>
+                A cada novo acionamento do botão, o sistema chama mais pessoas,
+                até chegar à segurança/emergência. Em todos os casos, a
+                localização atual do idoso é enviada junto com o pedido de ajuda.
+            </p>
+
+            <ol id="listaNiveisAcionamento">
+                <li id="nivelAcionamento1">
+                    <h3>1º acionamento</h3>
+                    <p>
+                        Chama o primeiro familiar/responsável cadastrado e envia
+                        a localização atual do idoso.
+                    </p>
+                </li>
+                <li id="nivelAcionamento2">
+                    <h3>2º acionamento</h3>
+                    <p>
+                        Chama o primeiro familiar/responsável e também o segundo
+                        familiar/responsável, e envia a localização atual do
+                        idoso para ambos.
+                    </p>
+                </li>
+                <li id="nivelAcionamento3">
+                    <h3>3º acionamento</h3>
+                    <p>
+                        Gera um alerta de segurança/emergência e envia a
+                        localização atual do idoso.
+                    </p>
+                </li>
+            </ol>
+        </section>
+
+        <!-- 6. ÁREA DE HISTÓRICO -->
+        <section id="secaoHistorico" aria-labelledby="tituloHistorico">
+            <h2 id="tituloHistorico">Histórico de chamados</h2>
+            <p>
+                Aqui, futuramente, o idoso poderá visualizar todos os chamados
+                já realizados, com data, horário, localização enviada, para
+                quem o chamado foi enviado e se ele foi respondido.
+            </p>
+
+            <table id="tabelaHistorico">
+                <caption>Chamados realizados</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Data e hora</th>
+                        <th scope="col">Localização</th>
+                        <th scope="col">Destinatários</th>
+                        <th scope="col">Status da resposta</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabelaHistorico">
+                    <tr>
+                        <td colspan="4">Nenhum chamado registrado ainda.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 7. ÁREA DE SEGURANÇA -->
+        <section id="areaSeguranca" aria-labelledby="tituloSeguranca">
+            <h2 id="tituloSeguranca">Segurança e emergência</h2>
+            <p>
+                Caso os familiares/responsáveis não consigam atender a tempo, o
+                P.R.O.T.E.G.E. poderá escalar o atendimento, gerando um alerta
+                de segurança/emergência com a localização atual do idoso.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- 8. RODAPÉ -->
+    <footer id="rodape">
+        <p>P.R.O.T.E.G.E. &copy; 2026</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

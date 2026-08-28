@@ -63,8 +63,21 @@ async function carregarPainel() {
 async function solicitarAssistencia() {
     if (!navigator.geolocation || !idosoAtual) return;
     const botao = document.getElementById("botaoAssistenciaPainel"); botao.disabled = true; botao.textContent = "Registrando...";
+    const { count: chamadosAnteriores, error: erroHistorico } = await supabaseClient.from("acionamentos").select("id", { count: "exact", head: true }).eq("idoso_id", idosoAtual.id);
+    if (erroHistorico) { mostrarMensagem("mensagemSuporte", erroHistorico.message, "erro"); botao.disabled = false; botao.textContent = "Solicitar assistência"; return; }
+    const nivel = Math.min((chamadosAnteriores || 0) + 1, 3);
+    const escalonamento = nivel === 1 ? { destinatarios: "Familiar 1", status: "Recebido", event_type: "assistance" } : nivel === 2 ? { destinatarios: "Familiar 1 + Familiar 2", status: "Recebido", event_type: "assistance" } : { destinatarios: "Familiar 1 + Familiar 2 + Emergência", status: "Emergência", event_type: "emergency" };
     navigator.geolocation.getCurrentPosition(async posicao => {
-        const { error } = await supabaseClient.from("acionamentos").insert({ idoso_id: idosoAtual.id, latitude: posicao.coords.latitude, longitude: posicao.coords.longitude, destinatarios: "Familiar 1", status: "Recebido" });
+        const evento = { latitude: posicao.coords.latitude, longitude: posicao.coords.longitude, ...escalonamento, source: "site", occurred_at: new Date().toISOString() };
+        let error = null;
+        try {
+            const { data: sessao } = await supabaseClient.auth.getSession();
+            const respostaApi = await fetch(`${protegeApiUrl}/api/v1/user/events`, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${sessao.session.access_token}` }, body: JSON.stringify(evento) });
+            if (!respostaApi.ok) { const detalhe = await respostaApi.json(); error = new Error(detalhe.error || "Falha no servidor"); }
+        } catch (erroApi) {
+            const resultadoLocal = await supabaseClient.from("acionamentos").insert({ idoso_id: idosoAtual.id, ...evento });
+            error = resultadoLocal.error;
+        }
         mostrarMensagem("mensagemSuporte", error ? error.message : "Assistência registrada e localização enviada.", error ? "erro" : "sucesso");
         await carregarPainel(); botao.disabled = false; botao.textContent = "Solicitar assistência";
     }, () => { mostrarMensagem("mensagemSuporte", "Não foi possível obter sua localização.", "erro"); botao.disabled = false; botao.textContent = "Solicitar assistência"; });

@@ -3,6 +3,7 @@ alter table public.acionamentos add column if not exists device_id text;
 alter table public.acionamentos add column if not exists occurred_at timestamptz;
 alter table public.acionamentos add column if not exists event_type text not null default 'manual';
 alter table public.acionamentos add column if not exists source text not null default 'site';
+alter table public.familiares add column if not exists email text;
 
 create table if not exists public.dispositivos (
   id uuid primary key default gen_random_uuid(),
@@ -14,6 +15,7 @@ create table if not exists public.dispositivos (
 );
 
 alter table public.dispositivos enable row level security;
+drop policy if exists "Admin gerencia dispositivos" on public.dispositivos;
 create policy "Admin gerencia dispositivos" on public.dispositivos for all to authenticated using (public.eh_admin()) with check (public.eh_admin());
 grant select, insert, update, delete on public.dispositivos to authenticated;
 

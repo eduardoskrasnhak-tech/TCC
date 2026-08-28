@@ -53,7 +53,9 @@ function configurarBotaoAssistencia() {
         return;
     }
 
-    botao.addEventListener("click", processarAcionamento);
+    botao.addEventListener("click", function () {
+        window.location.href = "dashboard.html";
+    });
 }
 
 
@@ -157,8 +159,8 @@ function configurarFormulariosDeAcesso() {
             });
 
             await supabaseClient.from("familiares").insert([
-                { idoso_id: idosoCriado.id, nome: dados.familiar1Nome, parentesco: dados.familiar1Parentesco, telefone: dados.familiar1Telefone, prioridade: 1 },
-                { idoso_id: idosoCriado.id, nome: dados.familiar2Nome, parentesco: dados.familiar2Parentesco, telefone: dados.familiar2Telefone, prioridade: 2 }
+                { idoso_id: idosoCriado.id, nome: dados.familiar1Nome, parentesco: dados.familiar1Parentesco, telefone: dados.familiar1Telefone, email: dados.familiar1Email || null, prioridade: 1 },
+                { idoso_id: idosoCriado.id, nome: dados.familiar2Nome, parentesco: dados.familiar2Parentesco, telefone: dados.familiar2Telefone, email: dados.familiar2Email || null, prioridade: 2 }
             ]);
 
             mostrarMensagemFormulario("mensagemRegistro", "Cadastro realizado com sucesso!", "sucesso");

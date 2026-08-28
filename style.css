@@ -674,3 +674,73 @@ body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opa
 @media (max-width: 700px) { .heroTrust { max-width: 310px; }.heroTrust span { font-size: 12px; } }
 .escolhaAcesso { width: min(100%, 720px); }.escolhaAcesso h1 { margin-top: 8px; }.opcoesArea { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }.cardArea { display: flex; flex-direction: column; gap: 8px; min-height: 190px; padding: 22px; border: 1px solid var(--line); border-radius: 14px; color: #eef7ff; background: rgba(7,15,27,.45); text-decoration: none; transition: .25s ease; }.cardArea:hover { transform: translateY(-5px); border-color: rgba(85,169,255,.6); background: rgba(49,113,184,.18); box-shadow: 0 15px 35px rgba(0,0,0,.2); }.destaqueArea { border-color: rgba(156,123,255,.35); background: rgba(92,68,176,.12); }.destaqueArea:hover { border-color: rgba(156,123,255,.75); background: rgba(92,68,176,.2); }.iconeArea { color: #71baff; font-size: 34px; line-height: 1; }.destaqueArea .iconeArea { color: #bcaaff; }.cardArea strong { font-size: 18px; }.cardArea small { color: var(--muted); line-height: 1.4; }.linkArea { margin-top: auto; color: #71baff; font-size: 14px; font-weight: bold; }.botaoSairEscolha { display: block; margin: 24px auto 0; border: 0; color: #8faac4; background: transparent; cursor: pointer; font: inherit; }.botaoSairEscolha:hover { color: white; }
 @media (max-width: 600px) { .opcoesArea { grid-template-columns: 1fr; } }
+.mensagemFormulario[data-tipo="emergencia"] { background: rgba(215, 47, 98, .2); color: #ffb3c0; border: 1px solid rgba(255, 95, 116, .35); }
+
+/* =====================================================
+   CAMADA SHADCN-STYLE — superfícies neutras e acessíveis
+   ===================================================== */
+:root { --background: #09090b; --foreground: #fafafa; --card: #111113; --card-foreground: #fafafa; --muted-foreground: #a1a1aa; --border: #27272a; --primary: #fafafa; --primary-foreground: #18181b; --ring: #71717a; }
+body { background: var(--background); color: var(--foreground); letter-spacing: -.005em; }
+body::before { opacity: .12; background-size: 48px 48px; mask-image: linear-gradient(to bottom, black, transparent 55%); }
+#cabecalho { min-height: 560px; padding-top: 92px; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.08), transparent 32%), var(--background); border-bottom: 1px solid var(--border); }
+#cabecalho::before { width: 360px; height: 360px; top: -230px; background: rgba(255,255,255,.1); filter: blur(100px); }
+#cabecalho h1 { background: none; color: #fafafa; font-weight: 750; letter-spacing: .12em; text-shadow: 0 0 35px rgba(255,255,255,.12); }
+#descricaoSistema { color: var(--muted-foreground); }
+.heroEyebrow { color: #a1a1aa; letter-spacing: .14em; }.heroEyebrow span { background: #a1a1aa; box-shadow: 0 0 0 4px rgba(161,161,170,.1); }
+.heroTrust span { color: #a1a1aa; background: rgba(255,255,255,.025); border-color: var(--border); }
+#menuNavegacao a { color: #a1a1aa; border-radius: 7px; }#menuNavegacao a:hover, #menuNavegacao a:focus { color: #fafafa; background: #18181b; border-color: var(--border); }
+#menuNavegacao a[id="botaoEntrar"], #menuNavegacao a[id="botaoCriarConta"], #menuNavegacao a[id="botaoPainel"] { color: #18181b; border-color: #fafafa; background: #fafafa; }
+#conteudoPrincipal { margin-top: 64px; } #conteudoPrincipal section { background: var(--card); border-color: var(--border); border-radius: 12px; box-shadow: 0 12px 35px rgba(0,0,0,.16); backdrop-filter: none; } #conteudoPrincipal section::after, .painelCard::after, .formularioAcesso::after { display: none; }
+#conteudoPrincipal h2, #conteudoPrincipal h3 { color: #fafafa; } #conteudoPrincipal p { color: var(--muted-foreground); }
+#areaPrincipal { background: linear-gradient(180deg, #161619, #111113) !important; border-color: #3f3f46 !important; } #areaPrincipal h2 { text-shadow: none; }
+#areaAcesso { background: var(--card) !important; }
+#botoesAcesso a, #botaoAssistencia { color: var(--primary-foreground); background: var(--primary); box-shadow: none; border: 1px solid var(--primary); } #botoesAcesso a:hover, #botaoAssistencia:hover { color: #fff; background: #27272a; border-color: #3f3f46; box-shadow: none; }
+#areaAssistencia { border-color: #3f3f46 !important; } #areaSeguranca { border-color: #7f1d1d !important; }
+#rodape { background: var(--background); color: #71717a; border-color: var(--border); }
+.avisoAcessoPublico { background: #18181b; border-color: var(--border); color: #d4d4d8; }.avisoAcessoPublico p { color: var(--muted-foreground); }.contatosPublicos a { background: #18181b; border-color: var(--border); color: #e4e4e7; }.contatosPublicos a:hover { background: #27272a; border-color: #52525b; }
+.paginaAcesso { background: radial-gradient(circle at 50% -15%, rgba(255,255,255,.08), transparent 33%), var(--background); }.marcaAcesso { background: none; color: #fafafa; }.subtituloAcesso, .textoAcesso { color: var(--muted-foreground); }.formularioAcesso { background: rgba(17,17,19,.94); border-color: var(--border); box-shadow: 0 24px 65px rgba(0,0,0,.28); }.formularioAcesso h1 { color: #fafafa; }.campoAcesso label { color: #d4d4d8; }.campoAcesso input, .formularioAcesso textarea, .formularioAcesso select { color: #fafafa; background: #09090b; border-color: var(--border); border-radius: 7px; }.campoAcesso input:focus, .formularioAcesso textarea:focus, .formularioAcesso select:focus { outline: 2px solid rgba(161,161,170,.35); border-color: #71717a; }.campoAcesso input::placeholder, .formularioAcesso textarea::placeholder { color: #71717a; }
+.grupoCadastro { border-color: var(--border); }.grupoCadastro legend, .grupoCadastro h2.subtituloCadastro { color: #e4e4e7; }.ajudaCadastro, .opcoesAcesso, .termosAcesso, .rodapeFormulario { color: var(--muted-foreground); }.opcoesAcesso a, .rodapeFormulario a, .voltarInicio { color: #e4e4e7; }.botaoFormulario { color: var(--primary-foreground); background: var(--primary); border: 1px solid var(--primary); box-shadow: none; border-radius: 7px; }.botaoFormulario:hover { color: #fff; background: #27272a; border-color: #3f3f46; }
+.paginaPainel { background: var(--background); }.cabecalhoPainel { background: rgba(9,9,11,.85); border-color: var(--border); box-shadow: 0 10px 35px rgba(0,0,0,.2); }.marcaPainel { background: none; color: #fafafa; }.linkPainel { color: #d4d4d8; }.botaoSair { color: #d4d4d8; border-color: var(--border); }.botaoSair:hover { background: #18181b; border-color: #52525b; }.tituloPainel h1 { color: #fafafa; }.tituloPainel p, .resumoCard span, .cabecalhoCard p { color: var(--muted-foreground); }.etiquetaPainel { color: #a1a1aa !important; }.resumoCard, .painelCard { background: var(--card); border-color: var(--border); box-shadow: 0 12px 35px rgba(0,0,0,.16); }.resumoCard::before { background: #fafafa; opacity: .15; }.resumoCard:hover, .painelCard:hover { border-color: #52525b; }.resumoCard strong, .cabecalhoCard h2 { color: #fafafa; }.tabelaPainel th { background: #18181b; color: #d4d4d8; border-bottom: 1px solid #3f3f46; }.tabelaPainel td { color: #a1a1aa; border-color: var(--border); }.tabelaPainel tbody tr:hover { background: #18181b; }.tabelaPainel a, .botaoTabela { color: #e4e4e7; }.statusPainel { background: #27272a; color: #d4d4d8; }.filtrosPainel { background: #111113; border-color: var(--border); }.campoFiltro label, .checkFiltro { color: #d4d4d8; }.campoFiltro input, .campoFiltro select, .statusSelect { color: #fafafa; background: #09090b; border-color: var(--border); }.mensagemCliente { background: #09090b; border-color: var(--border); }.mensagemCliente small { color: #71717a; }.mensagemCliente p { color: #d4d4d8; }.respostaCliente { background: #18181b; color: #d4d4d8; }
+.seloAdmin { color: #d4d4d8; border-color: #52525b; background: #18181b; }.painelMeta { color: #a1a1aa; border-color: #3f3f46; background: #18181b; }.pontoAtivo { background: #a1a1aa; box-shadow: 0 0 10px #a1a1aa; }.botaoEmergencia { background: #dc2626; box-shadow: none; }.botaoEmergencia:hover { background: #b91c1c; box-shadow: none; }.mensagemFormulario[data-tipo="emergencia"] { background: #3f151c; color: #fecdd3; border-color: #7f1d1d; }
+
+/* =====================================================
+   ACABAMENTO HÍBRIDO — personalidade PROTEGE + base limpa
+   ===================================================== */
+:root {
+  --background: #081321;
+  --foreground: #f5f9ff;
+  --card: #102036;
+  --card-foreground: #f5f9ff;
+  --muted-foreground: #9bb0c7;
+  --border: rgba(148, 181, 214, .2);
+  --primary: #eaf4ff;
+  --primary-foreground: #0b1a2d;
+  --ring: #62aeff;
+}
+body { background: var(--background); color: var(--foreground); }
+body::before { opacity: .2; background-image: linear-gradient(rgba(93, 153, 214, .08) 1px, transparent 1px), linear-gradient(90deg, rgba(93, 153, 214, .08) 1px, transparent 1px); }
+#cabecalho { min-height: 560px; background: radial-gradient(circle at 50% 0%, rgba(55, 139, 255, .2), transparent 34%), linear-gradient(180deg, #102a4b, #081321); border-color: var(--border); }
+#cabecalho::before { width: 400px; height: 400px; top: -250px; background: rgba(66, 157, 255, .22); filter: blur(95px); }
+#cabecalho h1, .marcaAcesso, .marcaPainel { background: linear-gradient(110deg, #ffffff, #8dccff 52%, #a994ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+#descricaoSistema, #conteudoPrincipal p, .subtituloAcesso, .textoAcesso { color: var(--muted-foreground); }
+#menuNavegacao a { color: #b9cce0; border-radius: 8px; }
+#menuNavegacao a:hover, #menuNavegacao a:focus { color: #fff; background: rgba(79, 157, 235, .12); border-color: rgba(117, 190, 255, .28); }
+#menuNavegacao a[id="botaoEntrar"], #menuNavegacao a[id="botaoCriarConta"], #menuNavegacao a[id="botaoPainel"] { color: #fff; border-color: rgba(118, 190, 255, .4); background: linear-gradient(110deg, rgba(36, 133, 234, .75), rgba(102, 82, 220, .75)); }
+#conteudoPrincipal section, .formularioAcesso, .resumoCard, .painelCard { background: linear-gradient(135deg, rgba(18, 39, 66, .94), rgba(12, 25, 43, .94)); border-color: var(--border); border-radius: 14px; box-shadow: 0 16px 45px rgba(0, 0, 0, .22); }
+#conteudoPrincipal section::after, .painelCard::after, .formularioAcesso::after { display: none; }
+#areaPrincipal { background: radial-gradient(circle at 90% 10%, rgba(81, 164, 255, .16), transparent 38%), linear-gradient(135deg, #173b67, #0d1e35) !important; border-color: rgba(99, 177, 255, .35) !important; }
+#areaAcesso { background: linear-gradient(135deg, rgba(17, 43, 74, .96), rgba(12, 25, 43, .94)) !important; }
+#botoesAcesso a, #botaoAssistencia, .botaoFormulario { color: #fff; background: linear-gradient(110deg, #2388ee, #6755e8); border: 1px solid rgba(126, 195, 255, .25); box-shadow: 0 10px 24px rgba(39, 123, 237, .22); }
+#botoesAcesso a:hover, #botaoAssistencia:hover, .botaoFormulario:hover { color: #fff; background: linear-gradient(110deg, #43a5ff, #856eff); border-color: rgba(150, 214, 255, .45); box-shadow: 0 14px 30px rgba(63, 133, 255, .3); }
+.avisoAcessoPublico, .contatosPublicos a { background: rgba(39, 91, 149, .18); border-color: rgba(99, 177, 255, .2); color: #b9ddff; }
+.contatosPublicos a:hover { background: rgba(62, 126, 196, .28); border-color: rgba(99, 177, 255, .45); }
+.campoAcesso input, .formularioAcesso textarea, .formularioAcesso select, .campoFiltro input, .campoFiltro select, .statusSelect { background: rgba(5, 13, 24, .72); color: #f5f9ff; border-color: var(--border); }
+.campoAcesso input:focus, .formularioAcesso textarea:focus, .formularioAcesso select:focus { outline: 2px solid rgba(98, 174, 255, .25); border-color: #62aeff; }
+.cabecalhoPainel { background: rgba(9, 24, 43, .9); border-color: var(--border); }
+.tabelaPainel th { background: rgba(39, 91, 149, .28); color: #d4eaff; }
+.tabelaPainel tbody tr:hover { background: rgba(75, 151, 232, .08); }
+.tabelaPainel a, .botaoTabela, .linkPainel, .opcoesAcesso a, .rodapeFormulario a, .voltarInicio { color: #8dccff; }
+.statusPainel { background: rgba(41, 156, 123, .2); color: #91f4d2; }
+.botaoEmergencia { background: linear-gradient(110deg, #ef4444, #c02654); box-shadow: 0 12px 28px rgba(192, 38, 84, .25); }
+.botaoEmergencia:hover { background: linear-gradient(110deg, #fb5b5b, #df3267); box-shadow: 0 16px 36px rgba(192, 38, 84, .36); }
+@media (max-width: 700px) { #cabecalho { min-height: 520px; padding-top: 72px; } #conteudoPrincipal section { padding: 24px; } }

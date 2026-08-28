@@ -38,3 +38,7 @@ curl -X POST http://localhost:5000/api/v1/device/events \
 ```
 
 O Flask converte o status recebido para o mesmo padrão usado pelos painéis e grava em `acionamentos` com `source = device`.
+
+## Notificações
+
+O envio é configurado por `NOTIFICATION_CHANNELS=email,whatsapp` ou `email,sms`. O e-mail usa SMTP. WhatsApp e SMS usam a API do Twilio; para WhatsApp em testes, o número do familiar precisa estar autorizado no Sandbox do WhatsApp do Twilio. Os telefones devem ser cadastrados com DDD; o backend assume Brasil (`+55`) quando o código do país não for informado.

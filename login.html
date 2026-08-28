@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | P.R.O.T.E.G.E.</title><link rel="stylesheet" href="style.css">
+</head><body class="paginaAcesso">
+    <main class="cartaoAcesso" aria-labelledby="tituloLogin">
+        <a class="marcaAcesso" href="index.html">P.R.O.T.E.G.E.</a>
+        <p class="subtituloAcesso">Assistência e segurança para idosos</p>
+        <section class="formularioAcesso">
+            <h1 id="tituloLogin">Bem-vindo de volta</h1>
+            <p class="textoAcesso">Entre para acompanhar os chamados e cuidar de quem você ama.</p>
+            <form id="formLogin">
+                <div class="campoAcesso"><label for="emailLogin">E-mail</label><input id="emailLogin" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required></div>
+                <div class="campoAcesso"><label for="senhaLogin">Senha</label><input id="senhaLogin" name="senha" type="password" autocomplete="current-password" placeholder="Digite sua senha" minlength="6" required></div>
+                <div class="opcoesAcesso"><label><input type="checkbox" name="lembrar"> Lembrar de mim</label><a href="#" id="linkEsqueciSenha">Esqueci minha senha</a></div>
+                <button class="botaoFormulario" type="submit">Entrar</button><p id="mensagemLogin" class="mensagemFormulario" role="status" aria-live="polite"></p>
+            </form>
+            <p class="rodapeFormulario">Ainda não tem uma conta? <a href="registro.html">Criar conta</a></p><a class="voltarInicio" href="index.html">← Voltar para o início</a>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="script.js"></script>
+</body></html>

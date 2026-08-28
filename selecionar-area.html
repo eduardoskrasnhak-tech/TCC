@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escolher área | P.R.O.T.E.G.E.</title><link rel="stylesheet" href="style.css">
+</head>
+<body class="paginaAcesso">
+    <main class="cartaoAcesso escolhaAcesso" aria-labelledby="tituloEscolha">
+        <a class="marcaAcesso" href="index.html">P.R.O.T.E.G.E.</a>
+        <p class="subtituloAcesso">Escolha como deseja continuar</p>
+        <section class="formularioAcesso">
+            <p class="etiquetaPainel">ACESSO ADMINISTRATIVO CONFIRMADO</p>
+            <h1 id="tituloEscolha">Qual área você deseja acessar?</h1>
+            <p class="textoAcesso">Sua conta possui acesso às duas experiências do sistema.</p>
+            <div class="opcoesArea">
+                <a class="cardArea" href="dashboard.html"><span class="iconeArea">⌁</span><strong>Área do usuário</strong><small>Chamados, histórico e suporte</small><span class="linkArea">Entrar na área →</span></a>
+                <a class="cardArea destaqueArea" href="admin.html"><span class="iconeArea">◇</span><strong>Área administrativa</strong><small>Clientes, atendimentos e mensagens</small><span class="linkArea">Abrir administração →</span></a>
+            </div>
+            <button id="botaoSairEscolha" class="botaoSairEscolha" type="button">Sair da conta</button>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
+    <script>document.getElementById("botaoSairEscolha").addEventListener("click", async function () { await supabaseClient.auth.signOut(); window.location.href = "login.html"; });</script>
+</body></html>

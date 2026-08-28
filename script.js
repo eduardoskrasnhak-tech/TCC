@@ -13,8 +13,32 @@ let contadorAcionamentos = 0;
 
 document.addEventListener("DOMContentLoaded", function () {
     configurarBotaoAssistencia();
-    configurarBotoesDeAcesso();
+    configurarFormulariosDeAcesso();
+    configurarAcessoPublico();
 });
+
+async function configurarAcessoPublico() {
+    const { data } = await supabaseClient.auth.getUser();
+    const autenticado = Boolean(data.user);
+    const botaoAssistencia = document.getElementById("botaoAssistencia");
+    const bloqueioAssistencia = document.getElementById("bloqueioAssistencia");
+    const bloqueioHistorico = document.getElementById("bloqueioHistorico");
+    const tabelaHistorico = document.getElementById("tabelaHistorico");
+    const botaoPainel = document.getElementById("botaoPainel");
+    const secoesProtegidas = ["areaAssistencia", "areaFuncionamento", "secaoHistorico"];
+
+    if (botaoAssistencia) botaoAssistencia.disabled = !autenticado;
+    if (bloqueioAssistencia) bloqueioAssistencia.hidden = autenticado;
+    if (bloqueioHistorico) bloqueioHistorico.hidden = autenticado;
+    if (tabelaHistorico) tabelaHistorico.hidden = !autenticado;
+    if (botaoPainel) botaoPainel.hidden = !autenticado;
+    secoesProtegidas.forEach(function (id) {
+        const secao = document.getElementById(id);
+        if (secao) secao.hidden = !autenticado;
+        const link = document.querySelector('a[href="#' + id + '"]');
+        if (link && link.parentElement) link.parentElement.hidden = !autenticado;
+    });
+}
 
 
 // =====================================================
@@ -36,6 +60,170 @@ function configurarBotaoAssistencia() {
 // =====================================================
 // BOTÕES ENTRAR / CRIAR CONTA
 // =====================================================
+
+function configurarFormulariosDeAcesso() {
+
+    const formLogin = document.getElementById("formLogin");
+    const formRegistro = document.getElementById("formRegistro");
+    const linkEsqueciSenha = document.getElementById("linkEsqueciSenha");
+
+    if (formLogin) {
+        formLogin.addEventListener("submit", async function (evento) {
+            evento.preventDefault();
+            const email = document.getElementById("emailLogin").value;
+            const senha = document.getElementById("senhaLogin").value;
+            const { data: loginData, error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+
+            if (error) {
+                mostrarMensagemFormulario("mensagemLogin", "E-mail ou senha invÃ¡lidos.", "erro");
+                return;
+            }
+
+            const { data: perfil } = await supabaseClient
+                .from("perfis")
+                .select("tipo")
+                .eq("usuario_id", loginData.user.id)
+                .single();
+
+            window.location.href = perfil?.tipo === "admin" ? "selecionar-area.html" : "dashboard.html";
+            return;
+            mostrarMensagemFormulario("mensagemLogin", "Login validado. A integração com o servidor será conectada na próxima etapa.", "sucesso");
+        });
+    }
+
+    if (formRegistro) {
+        formRegistro.addEventListener("submit", async function (evento) {
+            evento.preventDefault();
+            const senha = document.getElementById("senhaRegistro").value;
+            const confirmacao = document.getElementById("confirmarSenha").value;
+
+            if (senha !== confirmacao) {
+                mostrarMensagemFormulario("mensagemRegistro", "As senhas não coincidem.", "erro");
+                return;
+            }
+
+            const dados = Object.fromEntries(new FormData(formRegistro).entries());
+            const cpf = dados.cpf.replace(/\D/g, "");
+            const telefone = dados.telefone.replace(/\D/g, "");
+
+            if (cpf.length !== 11) {
+                mostrarMensagemFormulario("mensagemRegistro", "Informe um CPF válido com 11 dígitos.", "erro");
+                return;
+            }
+
+            if (telefone.length < 10 || dados.familiar1Telefone.replace(/\D/g, "").length < 10 || dados.familiar2Telefone.replace(/\D/g, "").length < 10) {
+                mostrarMensagemFormulario("mensagemRegistro", "Informe telefones válidos com DDD.", "erro");
+                return;
+            }
+
+            const { data: cadastroAuth, error: erroAuth } = await supabaseClient.auth.signUp({
+                email: dados.email,
+                password: senha
+            });
+
+            if (erroAuth || !cadastroAuth.user) {
+                mostrarMensagemFormulario("mensagemRegistro", erroAuth ? erroAuth.message : "NÃ£o foi possÃ­vel criar a conta.", "erro");
+                return;
+            }
+
+            const idoso = {
+                usuario_id: cadastroAuth.user.id,
+                nome: dados.nome,
+                rg: dados.rg,
+                cpf: cpf,
+                telefone: telefone,
+                data_nascimento: dados.dataNascimento
+            };
+            const { data: idosoCriado, error: erroIdoso } = await supabaseClient
+                .from("idosos")
+                .insert(idoso)
+                .select("id")
+                .single();
+
+            if (erroIdoso) {
+                mostrarMensagemFormulario("mensagemRegistro", erroIdoso.message, "erro");
+                return;
+            }
+
+            await supabaseClient.from("enderecos").insert({
+                idoso_id: idosoCriado.id,
+                cep: dados.cep,
+                logradouro: dados.logradouro,
+                numero: dados.numero,
+                bairro: dados.bairro,
+                cidade: dados.cidade,
+                estado: dados.estado.toUpperCase(),
+                complemento: dados.complemento
+            });
+
+            await supabaseClient.from("familiares").insert([
+                { idoso_id: idosoCriado.id, nome: dados.familiar1Nome, parentesco: dados.familiar1Parentesco, telefone: dados.familiar1Telefone, prioridade: 1 },
+                { idoso_id: idosoCriado.id, nome: dados.familiar2Nome, parentesco: dados.familiar2Parentesco, telefone: dados.familiar2Telefone, prioridade: 2 }
+            ]);
+
+            mostrarMensagemFormulario("mensagemRegistro", "Cadastro realizado com sucesso!", "sucesso");
+            formRegistro.reset();
+
+            mostrarMensagemFormulario("mensagemRegistro", "Cadastro validado. Sua conta está pronta para ser integrada ao servidor.", "sucesso");
+        });
+    }
+
+    if (linkEsqueciSenha) {
+        linkEsqueciSenha.addEventListener("click", async function (evento) {
+            evento.preventDefault();
+            const email = document.getElementById("emailLogin").value.trim();
+
+            if (!email) {
+                mostrarMensagemFormulario("mensagemLogin", "Digite seu e-mail para receber o link de recuperaÃ§Ã£o.", "erro");
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + "/reset-password.html"
+            });
+
+            if (error) {
+                mostrarMensagemFormulario("mensagemLogin", error.message, "erro");
+                return;
+            }
+
+            mostrarMensagemFormulario("mensagemLogin", "Link de recuperaÃ§Ã£o enviado. Verifique seu e-mail.", "info");
+            return;
+            mostrarMensagemFormulario("mensagemLogin", "O fluxo de recuperação de senha será disponibilizado em breve.", "info");
+        });
+    }
+
+    const formRedefinirSenha = document.getElementById("formRedefinirSenha");
+    if (formRedefinirSenha) {
+        formRedefinirSenha.addEventListener("submit", async function (evento) {
+            evento.preventDefault();
+            const novaSenha = document.getElementById("novaSenha").value;
+            const confirmarNovaSenha = document.getElementById("confirmarNovaSenha").value;
+
+            if (novaSenha !== confirmarNovaSenha) {
+                mostrarMensagemFormulario("mensagemRedefinir", "As senhas nÃ£o coincidem.", "erro");
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.updateUser({ password: novaSenha });
+            if (error) {
+                mostrarMensagemFormulario("mensagemRedefinir", error.message, "erro");
+                return;
+            }
+
+            mostrarMensagemFormulario("mensagemRedefinir", "Senha alterada com sucesso! Redirecionando...", "sucesso");
+            setTimeout(function () { window.location.href = "login.html"; }, 1500);
+        });
+    }
+}
+
+function mostrarMensagemFormulario(id, texto, tipo) {
+    const mensagem = document.getElementById(id);
+    if (mensagem) {
+        mensagem.textContent = texto;
+        mensagem.setAttribute("data-tipo", tipo);
+    }
+}
 
 function configurarBotoesDeAcesso() {
 

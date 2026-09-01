@@ -32,6 +32,8 @@ async function inicializarPainel() {
 }
 
 async function carregarMensagensUsuario() {
+    // A camada aprimorada controla filtros e respostas não lidas quando está disponível.
+    if (typeof window.carregarMensagensAprimoradas === "function") return window.carregarMensagensAprimoradas();
     if (!usuarioAtual) return;
     const lista = document.getElementById("listaMinhasMensagens");
     if (!lista) return;

@@ -2,6 +2,7 @@
 (function () {
     let filtroMensagem = "pendentes";
     let mensagensUsuario = [];
+    let ultimaRequisicaoMensagens = 0;
 
     const esc = valor => String(valor ?? "").replace(/[&<>"']/g, caractere => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[caractere]));
     const mensagem = (id, texto, tipo) => { const alvo = document.getElementById(id); if (alvo) { alvo.textContent = texto; alvo.dataset.tipo = tipo; } };
@@ -19,14 +20,30 @@
 
     async function carregarMensagensAprimoradas() {
         if (typeof usuarioAtual === "undefined" || !usuarioAtual) return;
+        const requisicaoAtual = ++ultimaRequisicaoMensagens;
+        let suportaConfirmacaoLeitura = true;
         let { data, error } = await supabaseClient.from("mensagens").select("id,assunto,tipo,mensagem,resposta,status,criado_em,respondido_em,lida_em").eq("usuario_id", usuarioAtual.id).order("criado_em", { ascending: false }).limit(50);
-        if (error && /lida_em/i.test(error.message || "")) ({ data, error } = await supabaseClient.from("mensagens").select("id,assunto,tipo,mensagem,resposta,status,criado_em,respondido_em").eq("usuario_id", usuarioAtual.id).order("criado_em", { ascending: false }).limit(50));
+        if (error && /lida_em/i.test(error.message || "")) {
+            suportaConfirmacaoLeitura = false;
+            ({ data, error } = await supabaseClient.from("mensagens").select("id,assunto,tipo,mensagem,resposta,status,criado_em,respondido_em").eq("usuario_id", usuarioAtual.id).order("criado_em", { ascending: false }).limit(50));
+        }
+        if (requisicaoAtual !== ultimaRequisicaoMensagens) return;
         if (error) { mensagem("mensagemSuporte", "Não foi possível atualizar suas mensagens.", "erro"); return; }
         mensagensUsuario = data || [];
         renderizarMensagensAprimoradas();
         const novas = mensagensUsuario.filter(item => item.resposta && !item.lida_em).map(item => item.id);
-        if (novas.length) await supabaseClient.from("mensagens").update({ lida_em: new Date().toISOString() }).in("id", novas);
+        if (novas.length && suportaConfirmacaoLeitura) {
+            const lidaEm = new Date().toISOString();
+            const { error: erroLeitura } = await supabaseClient.from("mensagens").update({ lida_em: lidaEm }).in("id", novas);
+            if (!erroLeitura) {
+                mensagensUsuario.forEach(item => { if (novas.includes(item.id)) item.lida_em = lidaEm; });
+                renderizarMensagensAprimoradas();
+            }
+        }
     }
+
+    // A rotina principal do painel chama esta versão para não sobrescrever o filtro escolhido.
+    window.carregarMensagensAprimoradas = carregarMensagensAprimoradas;
 
     async function carregarContatosExtras() {
         if (typeof idosoAtual === "undefined" || !idosoAtual) return;
@@ -96,6 +113,5 @@
         document.getElementById("formSenhaConta")?.addEventListener("submit", atualizarSenha);
         let tentativas = 0;
         const aguardarUsuario = window.setInterval(() => { if (typeof usuarioAtual !== "undefined" && usuarioAtual) { carregarMensagensAprimoradas(); carregarContatosExtras(); window.clearInterval(aguardarUsuario); } else if (++tentativas > 30) window.clearInterval(aguardarUsuario); }, 300);
-        window.setInterval(carregarMensagensAprimoradas, 20000);
     });
 })();

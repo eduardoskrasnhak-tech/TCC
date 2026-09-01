@@ -4,7 +4,7 @@
 let usuarioAtual;
 let idosoAtual;
 let chamadosDoUsuario = [];
-let filtroHistoricoAtual = "todos";
+let filtroHistoricoAtual = "andamento";
 
 document.addEventListener("DOMContentLoaded", inicializarPainel);
 
@@ -156,6 +156,10 @@ function configurarMelhoriasPainel() {
     document.querySelectorAll(".filtroHistorico").forEach(botao => botao.addEventListener("click", () => {
         filtroHistoricoAtual = botao.dataset.filtro;
         document.querySelectorAll(".filtroHistorico").forEach(item => item.classList.toggle("ativo", item === botao));
+        const titulo = document.getElementById("tituloHistoricoChamados");
+        const descricao = document.getElementById("descricaoHistoricoChamados");
+        if (titulo) titulo.textContent = filtroHistoricoAtual === "resolvidos" ? "Chamados resolvidos" : "Chamados em andamento";
+        if (descricao) descricao.textContent = filtroHistoricoAtual === "resolvidos" ? "Consulte os atendimentos que já foram concluídos." : "Acompanhe as solicitações que ainda precisam de atenção. Os chamados concluídos ficam em uma lista separada.";
         renderizarHistorico();
     }));
     document.getElementById("marcarChamadoResolvido")?.addEventListener("click", marcarChamadoResolvido);
@@ -212,7 +216,7 @@ function renderizarHistorico() {
         const contatos = contarContatos(chamado.destinatarios);
         const localizacao = chamado.latitude && chamado.longitude ? `<a href="https://www.google.com/maps?q=${chamado.latitude},${chamado.longitude}" target="_blank" rel="noopener">Ver localização</a>` : "Não registrada";
         return `<tr><td>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</td><td>${localizacao}</td><td title="${chamado.destinatarios || "Nenhum contato informado"}">${contatos} ${contatos === 1 ? "contato avisado" : "contatos avisados"}</td><td><span class="statusPainel ${status.classe}">${status.texto}</span></td></tr>`;
-    }).join("") : '<tr><td colspan="4">Nenhuma solicitação encontrada para este filtro.</td></tr>';
+    }).join("") : `<tr><td colspan="4">${filtroHistoricoAtual === "resolvidos" ? "Nenhum chamado resolvido registrado ainda." : "Nenhum chamado em andamento no momento."}</td></tr>`;
 }
 
 function renderizarChamadoAtivo() {

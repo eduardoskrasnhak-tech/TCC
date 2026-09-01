@@ -107,6 +107,22 @@ Os arquivos SQL ficam em `js-supabase/` porque fazem parte da configuração do 
    - cria o encerramento automático dos chamados na virada do dia;
    - registra quando um chamado foi encerrado automaticamente.
 
+5. `supabase-operacao.sql`
+   - cria a auditoria administrativa;
+   - cria a fila de notificações e tentativas de reenvio;
+   - adiciona informações operacionais aos dispositivos.
+
+6. `supabase-melhorias-web.sql`
+   - registra consentimento de privacidade;
+   - adiciona confirmação de leitura das mensagens;
+   - cria índices usados pelos filtros e históricos.
+
+7. `supabase-seguranca.sql`
+   - deve ser executado por último;
+   - separa as permissões de clientes e administradores;
+   - impede alteração indevida de respostas e chamados;
+   - protege funções internas e bloqueia eventos duplicados.
+
 ## 4. Principais tabelas
 
 ```text

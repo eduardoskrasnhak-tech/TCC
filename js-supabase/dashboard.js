@@ -5,6 +5,7 @@ let usuarioAtual;
 let idosoAtual;
 let chamadosDoUsuario = [];
 let filtroHistoricoAtual = "andamento";
+const escaparHtmlPainel = window.protegeEscaparHtml || (valor => String(valor ?? ""));
 
 document.addEventListener("DOMContentLoaded", inicializarPainel);
 
@@ -42,7 +43,7 @@ async function carregarMensagensUsuario() {
     if (!mensagens?.length) { lista.innerHTML = '<p class="estadoMensagens">Você ainda não enviou nenhuma mensagem ao suporte.</p>'; return; }
     lista.innerHTML = mensagens.map(item => {
         const respondida = Boolean(item.resposta);
-        return `<article class="mensagemUsuario ${respondida ? "mensagemRespondida" : "mensagemPendente"}><div class="cabecalhoMensagem"><div><strong>${item.assunto}</strong><small>${item.tipo} · ${new Date(item.criado_em).toLocaleString("pt-BR")}</small></div><span class="statusPainel ${respondida ? "statusResolvido" : "statusAguardando"}">${respondida ? "Respondida" : "Aguardando resposta"}</span></div><p class="textoMensagemUsuario">${item.mensagem}</p>${respondida ? `<div class="respostaCliente"><strong>Resposta da equipe:</strong><p>${item.resposta}</p><small>Respondida em ${new Date(item.respondido_em || item.criado_em).toLocaleString("pt-BR")}</small></div>` : "<small class=\"aguardandoMensagem\">A equipe responderá por este painel.</small>"}</article>`;
+        return `<article class="mensagemUsuario ${respondida ? "mensagemRespondida" : "mensagemPendente"}"><div class="cabecalhoMensagem"><div><strong>${escaparHtmlPainel(item.assunto)}</strong><small>${escaparHtmlPainel(item.tipo)} · ${new Date(item.criado_em).toLocaleString("pt-BR")}</small></div><span class="statusPainel ${respondida ? "statusResolvido" : "statusAguardando"}">${respondida ? "Respondida" : "Aguardando resposta"}</span></div><p class="textoMensagemUsuario">${escaparHtmlPainel(item.mensagem)}</p>${respondida ? `<div class="respostaCliente"><strong>Resposta da equipe:</strong><p>${escaparHtmlPainel(item.resposta)}</p><small>Respondida em ${new Date(item.respondido_em || item.criado_em).toLocaleString("pt-BR")}</small></div>` : "<small class=\"aguardandoMensagem\">A equipe responderá por este painel.</small>"}</article>`;
     }).join("");
 }
 
@@ -88,7 +89,7 @@ async function carregarPainelAntigo() {
     document.getElementById("totalFamiliares").textContent = familiares || 0;
     document.getElementById("ultimoChamado").textContent = chamados[0] ? new Date(chamados[0].criado_em).toLocaleDateString("pt-BR") : "Nenhum";
     const lista = document.getElementById("listaChamados");
-    lista.innerHTML = chamados.length ? chamados.map(chamado => `<tr><td>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</td><td>${chamado.latitude ? `<a href="https://www.google.com/maps?q=${chamado.latitude},${chamado.longitude}" target="_blank">Ver localização</a>` : "Não registrada"}</td><td>${chamado.destinatarios || "Familiares"}</td><td><span class="statusPainel">${chamado.status || "Recebido"}</span></td></tr>`).join("") : '<tr><td colspan="4">Nenhum chamado realizado ainda.</td></tr>';
+    lista.innerHTML = chamados.length ? chamados.map(chamado => `<tr><td>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</td><td>${chamado.latitude ? `<a href="https://www.google.com/maps?q=${Number(chamado.latitude)},${Number(chamado.longitude)}" target="_blank" rel="noopener noreferrer">Ver localização</a>` : "Não registrada"}</td><td>${escaparHtmlPainel(chamado.destinatarios || "Familiares")}</td><td><span class="statusPainel">${escaparHtmlPainel(chamado.status || "Recebido")}</span></td></tr>`).join("") : '<tr><td colspan="4">Nenhum chamado realizado ainda.</td></tr>';
 }
 
 async function solicitarAssistencia() {
@@ -116,8 +117,12 @@ async function solicitarAssistencia() {
 
 async function enviarMensagem(evento) {
     evento.preventDefault();
-    const { error } = await supabaseClient.from("mensagens").insert({ usuario_id: usuarioAtual.id, assunto: document.getElementById("assuntoMensagem").value, tipo: document.getElementById("tipoMensagem").value, mensagem: document.getElementById("textoMensagem").value });
-    mostrarMensagem("mensagemSuporte", error ? error.message : "Mensagem enviada ao suporte.", error ? "erro" : "sucesso");
+    const assunto = document.getElementById("assuntoMensagem").value.trim();
+    const tipo = document.getElementById("tipoMensagem").value.trim();
+    const mensagem = document.getElementById("textoMensagem").value.trim();
+    if (!assunto || !mensagem) { mostrarMensagem("mensagemSuporte", "Preencha o assunto e a mensagem.", "erro"); return; }
+    const { error } = await supabaseClient.from("mensagens").insert({ usuario_id: usuarioAtual.id, assunto, tipo, mensagem, status: "aberta" });
+    mostrarMensagem("mensagemSuporte", error ? "Não foi possível enviar a mensagem. Tente novamente." : "Mensagem enviada ao suporte.", error ? "erro" : "sucesso");
     if (!error) evento.target.reset();
 }
 
@@ -216,8 +221,8 @@ function renderizarHistorico() {
     lista.innerHTML = filtrados.length ? filtrados.map(chamado => {
         const status = statusHumano(chamado.status);
         const contatos = contarContatos(chamado.destinatarios);
-        const localizacao = chamado.latitude && chamado.longitude ? `<a href="https://www.google.com/maps?q=${chamado.latitude},${chamado.longitude}" target="_blank" rel="noopener">Ver localização</a>` : "Não registrada";
-        return `<tr><td>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</td><td>${localizacao}</td><td title="${chamado.destinatarios || "Nenhum contato informado"}">${contatos} ${contatos === 1 ? "contato avisado" : "contatos avisados"}</td><td><span class="statusPainel ${status.classe}">${status.texto}</span></td></tr>`;
+        const localizacao = chamado.latitude && chamado.longitude ? `<a href="https://www.google.com/maps?q=${Number(chamado.latitude)},${Number(chamado.longitude)}" target="_blank" rel="noopener noreferrer">Ver localização</a>` : "Não registrada";
+        return `<tr><td>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</td><td>${localizacao}</td><td title="${escaparHtmlPainel(chamado.destinatarios || "Nenhum contato informado")}">${contatos} ${contatos === 1 ? "contato avisado" : "contatos avisados"}</td><td><span class="statusPainel ${status.classe}">${escaparHtmlPainel(status.texto)}</span></td></tr>`;
     }).join("") : `<tr><td colspan="4">${filtroHistoricoAtual === "resolvidos" ? "Nenhum chamado resolvido registrado ainda." : "Nenhum chamado em andamento no momento."}</td></tr>`;
 }
 

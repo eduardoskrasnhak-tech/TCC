@@ -2,6 +2,7 @@
 (function () {
     const chamadosAtuais = () => typeof chamadosAdmin !== "undefined" ? chamadosAdmin : [];
     const alteracoesAtuais = () => typeof alteracoesChamados !== "undefined" ? alteracoesChamados : new Map();
+    const esc = window.protegeEscaparHtml || (valor => String(valor ?? ""));
 
     function statusHumano(status) {
         if (/emerg/i.test(String(status || ""))) return { texto: "Emergência acionada", classe: "statusEmergencia" };
@@ -37,7 +38,7 @@
         lista.innerHTML = andamento.slice(0, 3).map(chamado => {
             const status = statusHumano(chamado.status);
             const mapa = chamado.latitude != null && chamado.longitude != null ? `<a class="botaoTabela" href="https://www.google.com/maps?q=${chamado.latitude},${chamado.longitude}" target="_blank" rel="noopener">Ver localização</a>` : "Localização não registrada";
-            return `<article class="itemChamadoAtencao"><div><strong>${chamado.idosos?.nome || "Cliente"}</strong><small>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</small><span class="statusPainel ${status.classe}">${status.texto}</span></div><div class="acoesAtencao">${mapa}<button class="botaoTabela verChamadoAtencao" type="button">Ver chamado</button></div></article>`;
+            return `<article class="itemChamadoAtencao"><div><strong>${esc(chamado.idosos?.nome || "Cliente")}</strong><small>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</small><span class="statusPainel ${status.classe}">${esc(status.texto)}</span></div><div class="acoesAtencao">${mapa}<button class="botaoTabela verChamadoAtencao" type="button">Ver chamado</button></div></article>`;
         }).join("");
         lista.querySelectorAll(".verChamadoAtencao").forEach(botao => botao.addEventListener("click", () => document.getElementById("listaChamadosAdmin").scrollIntoView({ behavior: "smooth", block: "center" })));
     }
@@ -52,7 +53,7 @@
             const status = statusHumano(statusAtual);
             const mapa = chamado.latitude != null && chamado.longitude != null ? `<a href="https://www.google.com/maps?q=${chamado.latitude},${chamado.longitude}" target="_blank" rel="noopener">Ver localização</a>` : "Localização não registrada";
             const pendente = alteracoesAtuais().has(chamado.id);
-            return `<tr><td>${chamado.idosos?.nome || "Cliente"}</td><td>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</td><td>${mapa}</td><td><span class="statusPainel ${status.classe}">${status.texto}</span><select class="statusSelect" data-chamado="${chamado.id}" aria-label="Alterar status de ${chamado.idosos?.nome || "cliente"}"><option value="Recebido" ${statusAtual === "Recebido" ? "selected" : ""}>Aguardando atendimento</option><option value="Em atendimento" ${statusAtual === "Em atendimento" ? "selected" : ""}>Em atendimento</option><option value="Resolvido" ${statusAtual === "Resolvido" ? "selected" : ""}>Resolvido</option><option value="Emergência" ${/emerg/i.test(String(statusAtual || "")) ? "selected" : ""}>Emergência acionada</option></select></td><td class="estadoAlteracao">${pendente ? "Alteração pendente" : "✓ Salvo"}</td></tr>`;
+            return `<tr><td>${esc(chamado.idosos?.nome || "Cliente")}</td><td>${new Date(chamado.criado_em).toLocaleString("pt-BR")}</td><td>${mapa}</td><td><span class="statusPainel ${status.classe}">${esc(status.texto)}</span><select class="statusSelect" data-chamado="${esc(chamado.id)}" aria-label="Alterar status de ${esc(chamado.idosos?.nome || "cliente")}"><option value="Recebido" ${statusAtual === "Recebido" ? "selected" : ""}>Aguardando atendimento</option><option value="Em atendimento" ${statusAtual === "Em atendimento" ? "selected" : ""}>Em atendimento</option><option value="Resolvido" ${statusAtual === "Resolvido" ? "selected" : ""}>Resolvido</option><option value="Emergência" ${/emerg/i.test(String(statusAtual || "")) ? "selected" : ""}>Emergência acionada</option></select></td><td class="estadoAlteracao">${pendente ? "Alteração pendente" : "✓ Salvo"}</td></tr>`;
         }).join("") : '<tr><td colspan="5">Nenhum chamado encontrado.</td></tr>';
         corpo.querySelectorAll(".statusSelect").forEach(select => select.addEventListener("change", () => window.registrarAlteracaoStatus(select.dataset.chamado, select.value)));
         if (window.atualizarIndicadorAlteracoes) window.atualizarIndicadorAlteracoes();
@@ -63,7 +64,7 @@
         if (!lista) return;
         lista.innerHTML = mensagens?.length ? mensagens.map(mensagem => {
             const respondida = Boolean(mensagem.resposta);
-            return `<article class="mensagemCliente ${respondida ? "mensagemRespondida" : "mensagemPendente"}"><div class="cabecalhoMensagem"><div><strong>${mensagem.assunto}</strong><small>${mensagem.tipo} · ${new Date(mensagem.criado_em).toLocaleString("pt-BR")}</small></div><span class="statusPainel ${respondida ? "statusResolvido" : "statusAguardando"}">${respondida ? "Respondida" : "Aguardando resposta"}</span></div><p class="textoMensagemCliente">${mensagem.mensagem}</p>${respondida ? `<div class="respostaCliente"><strong>Resposta da equipe:</strong><p>${mensagem.resposta}</p></div>` : `<label class="rotuloResposta" for="resposta-${mensagem.id}">Resposta</label><textarea id="resposta-${mensagem.id}" rows="3" placeholder="Digite uma resposta para o cliente"></textarea><button class="botaoTabela responderMensagem" data-id="${mensagem.id}" type="button">Responder</button>`}</article>`;
+            return `<article class="mensagemCliente ${respondida ? "mensagemRespondida" : "mensagemPendente"}"><div class="cabecalhoMensagem"><div><strong>${esc(mensagem.assunto)}</strong><small>${esc(mensagem.tipo)} · ${new Date(mensagem.criado_em).toLocaleString("pt-BR")}</small></div><span class="statusPainel ${respondida ? "statusResolvido" : "statusAguardando"}">${respondida ? "Respondida" : "Aguardando resposta"}</span></div><p class="textoMensagemCliente">${esc(mensagem.mensagem)}</p>${respondida ? `<div class="respostaCliente"><strong>Resposta da equipe:</strong><p>${esc(mensagem.resposta)}</p></div>` : `<label class="rotuloResposta" for="resposta-${esc(mensagem.id)}">Resposta</label><textarea id="resposta-${esc(mensagem.id)}" rows="3" placeholder="Digite uma resposta para o cliente"></textarea><button class="botaoTabela responderMensagem" data-id="${esc(mensagem.id)}" type="button">Responder</button>`}</article>`;
         }).join("") : "Nenhuma mensagem recebida.";
         lista.querySelectorAll(".responderMensagem").forEach(botao => botao.addEventListener("click", () => window.responderMensagem(botao.dataset.id)));
     }
@@ -73,7 +74,7 @@
         const clientes = typeof clientesAdmin !== "undefined" ? clientesAdmin : [];
         if (!seletor || !clientes.length) return;
         const valorAtual = seletor.value;
-        seletor.innerHTML = '<option value="">Selecione um cliente</option>' + clientes.map(cliente => `<option value="${cliente.id}">${cliente.nome}</option>`).join("");
+        seletor.innerHTML = '<option value="">Selecione um cliente</option>' + clientes.map(cliente => `<option value="${esc(cliente.id)}">${esc(cliente.nome)}</option>`).join("");
         if (clientes.some(cliente => cliente.id === valorAtual)) seletor.value = valorAtual;
     }
 
@@ -175,12 +176,13 @@
             ["Data e hora", data ? new Date(data).toLocaleString("pt-BR") : "Não informada"],
             ["Tipo", chamado.event_type === "emergency" ? "Emergência" : "Solicitação de assistência"],
             ["Origem", chamado.source === "device" ? "Dispositivo físico" : chamado.source === "simulation" ? "Simulação administrativa" : "Painel do usuário"],
-            ["Status", `<span class="statusPainel ${classeStatus}">${textoStatus}</span>`],
+            ["Status", `<span class="statusPainel ${classeStatus}">${esc(textoStatus)}</span>`],
             ["Destinatários", chamado.destinatarios || "Não informado"],
             ["Dispositivo", chamado.device_id || "Não vinculado"],
             ["Localização", temLocal ? `<a class="botaoTabela" href="${mapa}" target="_blank" rel="noopener">Abrir no mapa</a><small>${esc(chamado.latitude)}, ${esc(chamado.longitude)}</small>` : "Não registrada"]
         ];
-        alvo.innerHTML = itens.map(([label, value]) => `<div class="detalheChamado"><span>${esc(label)}</span><strong>${value.includes("<") ? value : esc(value)}</strong></div>`).join("");
+        const camposComHtmlControlado = new Set(["Status", "Localização"]);
+        alvo.innerHTML = itens.map(([label, value]) => `<div class="detalheChamado"><span>${esc(label)}</span><strong>${camposComHtmlControlado.has(label) ? value : esc(value)}</strong></div>`).join("");
         if (acoes && assumir) {
             const podeAssumir = chamado.status !== "Resolvido" && chamado.status !== "Em atendimento";
             acoes.hidden = !podeAssumir;

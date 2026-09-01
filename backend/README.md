@@ -18,6 +18,12 @@ Preencha `SUPABASE_SERVICE_ROLE_KEY` no `.env`. Essa chave nunca deve ir para o 
 python app.py
 ```
 
+Em produção, use um servidor WSGI em vez do servidor de desenvolvimento:
+
+```powershell
+waitress-serve --listen=127.0.0.1:5000 app:app
+```
+
 Teste de saúde: `GET http://localhost:5000/api/health`.
 
 O endpoint do dispositivo é `POST /api/v1/device/events` e exige o header `X-Device-Token`.
@@ -58,4 +64,4 @@ Esse token fica somente no servidor/agendador e nunca no navegador.
 
 ## Segurança para produção
 
-Antes de expor a API na internet, leia [SEGURANCA.md](../SEGURANCA.md). Em resumo: mantenha `FLASK_DEBUG=false`, use HTTPS, configure `CORS_ORIGINS` apenas com o domínio real do site e guarde todos os segredos somente no ambiente do servidor. A API aplica cabeçalhos de proteção, limite de corpo e limites básicos de requisição, mas a hospedagem deve complementar isso com proxy/WAF e rate limiting centralizado.
+Antes de expor a API na internet, leia [SEGURANCA.md](../SEGURANCA.md). Em resumo: mantenha `FLASK_DEBUG=false`, use HTTPS, configure `CORS_ORIGINS` apenas com o domínio real do site e guarde todos os segredos somente no ambiente do servidor. Ative `FORCE_HTTPS=true` somente quando o endereço HTTPS estiver pronto. Se houver exatamente um proxy reverso confiável na frente do Flask, use também `TRUST_PROXY_HEADERS=true`. A API aplica cabeçalhos de proteção, limite de corpo, validade temporal de eventos e limites básicos de requisição, mas a hospedagem deve complementar isso com proxy/WAF e rate limiting centralizado.

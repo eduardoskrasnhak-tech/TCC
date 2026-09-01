@@ -18,11 +18,40 @@ function lerTentativasLogin(email) { try { return JSON.parse(localStorage.getIte
 function registrarFalhaLogin(email) { const estado = lerTentativasLogin(email); const tentativas = estado.tentativas + 1; const bloqueadoAte = tentativas >= LIMITE_TENTATIVAS_LOGIN ? Date.now() + BLOQUEIO_LOGIN_MS : 0; localStorage.setItem(chaveTentativasLogin(email), JSON.stringify({ tentativas: bloqueadoAte ? 0 : tentativas, bloqueadoAte })); return bloqueadoAte; }
 function limparTentativasLogin(email) { localStorage.removeItem(chaveTentativasLogin(email)); }
 
+function cpfValido(valor) {
+    const cpf = String(valor || "").replace(/\D/g, "");
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    const calcular = tamanho => {
+        let soma = 0;
+        for (let indice = 0; indice < tamanho; indice++) soma += Number(cpf[indice]) * (tamanho + 1 - indice);
+        const resto = (soma * 10) % 11;
+        return resto === 10 ? 0 : resto;
+    };
+    return calcular(9) === Number(cpf[9]) && calcular(10) === Number(cpf[10]);
+}
+
+function mensagemSeguraDeCadastro(erro) {
+    const texto = String(erro?.message || "").toLowerCase();
+    if (texto.includes("already registered") || texto.includes("already been registered")) return "Este e-mail já possui uma conta.";
+    if (texto.includes("duplicate") || texto.includes("cpf")) return "Este CPF já está cadastrado.";
+    return "Não foi possível concluir o cadastro. Revise os dados e tente novamente.";
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     configurarBotaoAssistencia();
     configurarFormulariosDeAcesso();
     configurarAcessoPublico();
+    configurarSaidaDaEscolhaDeArea();
 });
+
+function configurarSaidaDaEscolhaDeArea() {
+    const botao = document.getElementById("botaoSairEscolha");
+    if (!botao) return;
+    botao.addEventListener("click", async function () {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+    });
+}
 
 async function configurarAcessoPublico() {
     const { data } = await supabaseClient.auth.getUser();
@@ -124,12 +153,22 @@ function configurarFormulariosDeAcesso() {
                 return;
             }
 
+            if (senha.length < 8) {
+                mostrarMensagemFormulario("mensagemRegistro", "Use uma senha com pelo menos 8 caracteres.", "erro");
+                return;
+            }
+
             const dados = Object.fromEntries(new FormData(formRegistro).entries());
             const cpf = dados.cpf.replace(/\D/g, "");
             const telefone = dados.telefone.replace(/\D/g, "");
 
-            if (cpf.length !== 11) {
+            if (!cpfValido(cpf)) {
                 mostrarMensagemFormulario("mensagemRegistro", "Informe um CPF válido com 11 dígitos.", "erro");
+                return;
+            }
+
+            if (dados.rg.replace(/\D/g, "").length !== 9) {
+                mostrarMensagemFormulario("mensagemRegistro", "Informe um RG válido no formato xx.xxx.xxx-x.", "erro");
                 return;
             }
 
@@ -144,7 +183,7 @@ function configurarFormulariosDeAcesso() {
             });
 
             if (erroAuth || !cadastroAuth.user) {
-                mostrarMensagemFormulario("mensagemRegistro", erroAuth ? erroAuth.message : "Não foi possível criar a conta.", "erro");
+                mostrarMensagemFormulario("mensagemRegistro", mensagemSeguraDeCadastro(erroAuth), "erro");
                 return;
             }
 
@@ -163,7 +202,7 @@ function configurarFormulariosDeAcesso() {
                 .single();
 
             if (erroIdoso) {
-                mostrarMensagemFormulario("mensagemRegistro", erroIdoso.message, "erro");
+                mostrarMensagemFormulario("mensagemRegistro", mensagemSeguraDeCadastro(erroIdoso), "erro");
                 return;
             }
 
@@ -207,7 +246,7 @@ function configurarFormulariosDeAcesso() {
             });
 
             if (error) {
-                mostrarMensagemFormulario("mensagemLogin", error.message, "erro");
+                mostrarMensagemFormulario("mensagemLogin", "Não foi possível enviar o link agora. Aguarde e tente novamente.", "erro");
                 return;
             }
 
@@ -229,9 +268,15 @@ function configurarFormulariosDeAcesso() {
                 return;
             }
 
+
+            if (novaSenha.length < 8) {
+                mostrarMensagemFormulario("mensagemRedefinir", "Use uma senha com pelo menos 8 caracteres.", "erro");
+                return;
+            }
+
             const { error } = await supabaseClient.auth.updateUser({ password: novaSenha });
             if (error) {
-                mostrarMensagemFormulario("mensagemRedefinir", error.message, "erro");
+                mostrarMensagemFormulario("mensagemRedefinir", "Não foi possível alterar a senha. Solicite um novo link e tente novamente.", "erro");
                 return;
             }
 

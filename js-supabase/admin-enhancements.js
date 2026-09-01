@@ -13,7 +13,7 @@
         const ids = new Set(clientes.filter(cliente => !busca || cliente.nome.toLowerCase().includes(busca) || String(cliente.cpf || "").includes(busca)).map(cliente => cliente.id));
         const filtrados = chamados.filter(chamado => ids.has(chamado.idoso_id) && (status === "todos" || (status === "pendentes" && chamado.status !== "Resolvido") || chamado.status === status || (status === "Emergência" && /emerg/i.test(chamado.status || ""))) && (tipo === "todos" || chamado.event_type === tipo) && (!inicio || new Date(chamado.occurred_at || chamado.criado_em) >= new Date(`${inicio}T00:00:00`)));
         if (typeof window.renderizarChamados === "function") window.renderizarChamados(filtrados);
-        document.querySelectorAll("#listaClientes tr").forEach(linha => { const texto = linha.textContent.toLowerCase(); linha.hidden = Boolean(busca && !texto.includes(busca)); });
+        document.querySelectorAll("#listaClientes tr[data-cliente-id]").forEach(linha => { linha.hidden = Boolean(busca && !ids.has(linha.dataset.clienteId)); });
         paginarClientes();
     }
 

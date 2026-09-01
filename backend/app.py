@@ -7,10 +7,11 @@
 import hashlib
 import hmac
 import os
+import re
 import smtplib
 from collections import defaultdict, deque
 from email.message import EmailMessage
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from threading import Lock
 from time import monotonic
@@ -20,6 +21,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.exceptions import RequestEntityTooLarge
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # ============================================================
 # CONFIGURAÇÃO DA APLICAÇÃO
@@ -29,6 +31,8 @@ load_dotenv()
 app = Flask(__name__)
 DEFAULT_CORS_ORIGINS = "http://127.0.0.1:5500,http://localhost:5500"
 CORS_ORIGINS = [origin.strip() for origin in os.getenv("CORS_ORIGINS", DEFAULT_CORS_ORIGINS).split(",") if origin.strip()]
+if "*" in CORS_ORIGINS:
+    raise RuntimeError("CORS_ORIGINS não pode usar curinga; informe as origens autorizadas.")
 CORS(app, resources={r"/api/*": {
     "origins": CORS_ORIGINS,
     "methods": ["GET", "POST", "OPTIONS"],
@@ -36,12 +40,22 @@ CORS(app, resources={r"/api/*": {
     "max_age": 600,
 }})
 app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_REQUEST_BODY_BYTES", "16384"))
+FORCE_HTTPS = os.getenv("FORCE_HTTPS", "false").lower() == "true"
+if os.getenv("TRUST_PROXY_HEADERS", "false").lower() == "true":
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 API_PREFIX = "/api/v1"
 _rate_limit_buckets = defaultdict(deque)
 _rate_limit_lock = Lock()
+
+
+@app.before_request
+def require_https_in_production():
+    """Recusa HTTP quando a implantação estiver configurada para exigir TLS."""
+    if FORCE_HTTPS and not request.is_secure:
+        return error("HTTPS obrigatório.", 400)
 
 
 @app.after_request
@@ -52,7 +66,7 @@ def add_security_headers(response):
     response.headers["Referrer-Policy"] = "no-referrer"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), payment=()"
     response.headers["Cache-Control"] = "no-store"
-    if os.getenv("FORCE_HTTPS", "false").lower() == "true":
+    if FORCE_HTTPS:
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
@@ -295,8 +309,11 @@ def authenticated_user():
     authorization = request.headers.get("Authorization", "")
     if not authorization.startswith("Bearer ") or not SUPABASE_ANON_KEY:
         return None
-    response = requests.get(f"{SUPABASE_URL}/auth/v1/user", headers={"apikey": SUPABASE_ANON_KEY, "Authorization": authorization}, timeout=10)
-    return response.json() if response.ok else None
+    try:
+        response = requests.get(f"{SUPABASE_URL}/auth/v1/user", headers={"apikey": SUPABASE_ANON_KEY, "Authorization": authorization}, timeout=10)
+        return response.json() if response.ok else None
+    except requests.RequestException:
+        return None
 
 
 def worker_authorized():
@@ -319,10 +336,19 @@ def save_user_event(payload, user_id):
         raise ValueError("Coordenadas inválidas")
     if occurred_at.tzinfo is None:
         occurred_at = occurred_at.replace(tzinfo=timezone.utc)
+    agora = datetime.now(timezone.utc)
+    idade_maxima = int(os.getenv("MAX_EVENT_AGE_SECONDS", "86400"))
+    if occurred_at > agora + timedelta(seconds=120) or (agora - occurred_at).total_seconds() > idade_maxima:
+        raise ValueError("Data/hora do chamado fora do intervalo permitido")
     event_type = str(payload.get("event_type", ""))
     status = str(payload.get("status", ""))
     destinatarios = str(payload.get("destinatarios", "")).strip()
-    if (event_type, status) not in {("assistance", "Recebido"), ("emergency", "Emergência")}:
+    escalonamentos_permitidos = {
+        ("assistance", "Recebido", "Familiar 1"),
+        ("assistance", "Recebido", "Familiar 1 + Familiar 2"),
+        ("emergency", "Emergência", "Familiar 1 + Familiar 2 + Emergência"),
+    }
+    if (event_type, status, destinatarios) not in escalonamentos_permitidos:
         raise ValueError("Tipo ou status de chamado inválido")
     if not destinatarios or len(destinatarios) > 300:
         raise ValueError("Destinatários inválidos")
@@ -371,6 +397,8 @@ def receive_device_event():
         return error(f"Campos obrigatórios ausentes: {', '.join(missing)}")
     if not device_token:
         return error("Token do dispositivo ausente", 401)
+    if not re.fullmatch(r"[A-Za-z0-9._-]{3,64}", str(payload["device_id"])):
+        return error("ID do dispositivo inválido")
     if payload["event_type"] != "emergency":
         return error("event_type deve ser emergency")
     try:
@@ -381,6 +409,10 @@ def receive_device_event():
         occurred_at = datetime.fromisoformat(str(payload["occurred_at"]).replace("Z", "+00:00"))
         if occurred_at.tzinfo is None:
             occurred_at = occurred_at.replace(tzinfo=timezone.utc)
+        agora = datetime.now(timezone.utc)
+        idade_maxima = int(os.getenv("MAX_EVENT_AGE_SECONDS", "86400"))
+        if occurred_at > agora + timedelta(seconds=120) or (agora - occurred_at).total_seconds() > idade_maxima:
+            return error("Data/hora do evento fora do intervalo permitido")
     except (TypeError, ValueError):
         return error("Coordenadas ou data/hora inválidas")
 
@@ -392,7 +424,9 @@ def receive_device_event():
         return error("Dispositivo não autorizado", 401)
 
     status_map = {"received": "Recebido", "in_service": "Em atendimento", "resolved": "Resolvido", "emergency": "Emergência"}
-    status = status_map.get(str(payload["status"]).lower(), "Recebido")
+    status = status_map.get(str(payload["status"]).lower())
+    if not status:
+        return error("Status do dispositivo inválido")
     occurrence = {
         "idoso_id": devices[0]["idoso_id"],
         "device_id": payload["device_id"],

@@ -11,14 +11,16 @@ create table if not exists public.perfis (
   usuario_id uuid primary key references auth.users(id) on delete cascade, tipo text not null default 'usuario' check (tipo in ('usuario', 'admin'))
 );
 alter table public.acionamentos enable row level security; alter table public.mensagens enable row level security; alter table public.perfis enable row level security;
-create or replace function public.eh_admin() returns boolean language sql security definer set search_path = public as $$ select exists (select 1 from public.perfis where usuario_id = auth.uid() and tipo = 'admin'); $$;
+create or replace function public.eh_admin() returns boolean language sql stable security definer set search_path = '' as $$ select exists (select 1 from public.perfis where usuario_id = (select auth.uid()) and tipo = 'admin'); $$;
 create policy "Usuário vê seus acionamentos" on public.acionamentos for select to authenticated using (exists (select 1 from public.idosos where idosos.id = acionamentos.idoso_id and idosos.usuario_id = auth.uid()) or public.eh_admin());
 create policy "Usuário cria seus acionamentos" on public.acionamentos for insert to authenticated with check (exists (select 1 from public.idosos where idosos.id = acionamentos.idoso_id and idosos.usuario_id = auth.uid()));
 create policy "Admin gerencia acionamentos" on public.acionamentos for all to authenticated using (public.eh_admin()) with check (public.eh_admin());
 create policy "Admin gerencia idosos" on public.idosos for all to authenticated using (public.eh_admin()) with check (public.eh_admin());
 create policy "Admin gerencia enderecos" on public.enderecos for all to authenticated using (public.eh_admin()) with check (public.eh_admin());
 create policy "Admin gerencia familiares" on public.familiares for all to authenticated using (public.eh_admin()) with check (public.eh_admin());
-create policy "Usuário gerencia mensagens" on public.mensagens for all to authenticated using (usuario_id = auth.uid() or public.eh_admin()) with check (usuario_id = auth.uid() or public.eh_admin());
+create policy "Usuário consulta suas mensagens" on public.mensagens for select to authenticated using (usuario_id = auth.uid());
+create policy "Usuário cria suas mensagens" on public.mensagens for insert to authenticated with check (usuario_id = auth.uid() and resposta is null and respondido_em is null and status = 'aberta');
+create policy "Admin consulta mensagens" on public.mensagens for select to authenticated using (public.eh_admin());
 create policy "Usuário vê o próprio perfil" on public.perfis for select to authenticated using (usuario_id = auth.uid());
 create policy "Admin vê perfis" on public.perfis for select to authenticated using (public.eh_admin());
 grant select, insert, update, delete on public.acionamentos, public.mensagens, public.perfis to authenticated;

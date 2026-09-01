@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://agysrflxstkranxznxxt.supabase.co wss://agysrflxstkranxznxxt.supabase.co http://localhost:5000 http://127.0.0.1:5000; object-src 'none'; base-uri 'self'; form-action 'self'">
     <title>Painel do usuário | P.R.O.T.E.G.E.</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -52,7 +54,7 @@
             <div class="cabecalhoCard"><div><p class="etiquetaPainel">ATENÇÃO</p><h2 id="tituloChamadoAtivo">Solicitação de assistência em andamento</h2><p id="chamadoAtivoStatus">Assistência solicitada</p></div><span class="statusPainel statusAtencao">Em andamento</span></div>
             <p id="chamadoAtivoHorario"></p><p id="chamadoAtivoDestinatarios"></p>
             <div id="linhaTempoChamado" class="linhaTempoChamado" aria-label="Andamento da solicitação"></div>
-            <div class="acoesChamadoAtivo"><a id="chamadoAtivoLocal" class="botaoTabela" href="#" target="_blank" hidden>Ver localização</a><button id="marcarChamadoResolvido" class="botaoFormulario" type="button">Marcar como resolvido</button></div>
+            <div class="acoesChamadoAtivo"><a id="chamadoAtivoLocal" class="botaoTabela" href="#" target="_blank" rel="noopener noreferrer" hidden>Ver localização</a><button id="marcarChamadoResolvido" class="botaoFormulario" type="button">Marcar como resolvido</button></div>
         </section>
         <section class="painelCard">
             <div class="cabecalhoCard">
@@ -90,7 +92,7 @@
             <form id="formMensagem">
                 <div class="campoDuplo">
                     <div class="campoAcesso"><label for="assuntoMensagem">Assunto</label><input id="assuntoMensagem"
-                            required placeholder="Ex.: Atualizar familiar"></div>
+                            required maxlength="150" placeholder="Ex.: Atualizar familiar"></div>
                     <div class="campoAcesso"><label for="tipoMensagem">Tipo</label><select id="tipoMensagem">
                             <option>Dúvida</option>
                             <option>Solicitação de auxílio</option>
@@ -98,7 +100,7 @@
                         </select></div>
                 </div>
                 <div class="campoAcesso"><label for="textoMensagem">Mensagem</label><textarea id="textoMensagem"
-                        rows="4" required placeholder="Descreva como podemos ajudar"></textarea></div><button
+                        rows="4" required maxlength="5000" placeholder="Descreva como podemos ajudar"></textarea></div><button
                     class="botaoFormulario" type="submit">Enviar mensagem</button>
                 <p id="mensagemSuporte" class="mensagemFormulario" role="status"></p>
             </form>

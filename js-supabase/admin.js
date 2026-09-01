@@ -5,6 +5,11 @@ let clientesAdmin = [], chamadosAdmin = [];
 const alteracoesChamados = new Map();
 let avisarSaidaComAlteracoes = true;
 const PRAZO_EXIBICAO_RESOLVIDO_MS = 24 * 60 * 60 * 1000;
+const escaparHtmlAdmin = window.protegeEscaparHtml || (valor => String(valor ?? ""));
+function cpfProtegidoAdmin(cpf) {
+    const numeros = String(cpf || "").replace(/\D/g, "");
+    return numeros.length === 11 ? `***.***.***-${numeros.slice(-2)}` : "Não informado";
+}
 
 function deveExibirChamadoOperacional(chamado) {
     if (chamado.status !== "Resolvido") return true;
@@ -38,7 +43,7 @@ async function carregarAdmin() {
     chamadosAdmin = chamados.filter(deveExibirChamadoOperacional).slice(0, 10);
     const { data: mensagens = [] } = await supabaseClient.from("mensagens").select("*").order("criado_em", { ascending: false }).limit(30);
     document.getElementById("totalClientes").textContent = clientes.length; document.getElementById("totalChamadosAdmin").textContent = chamadosAdmin.length; document.getElementById("totalMensagens").textContent = mensagens.filter(m => m.status === "aberta").length;
-    document.getElementById("listaClientes").innerHTML = clientes.length ? clientes.map(c => `<tr><td>${c.nome}</td><td>${c.cpf}</td><td>${c.telefone}</td><td><button class="botaoTabela" data-id="${c.id}">Editar</button></td></tr>`).join("") : '<tr><td colspan="4">Nenhum cliente cadastrado.</td></tr>';
+    document.getElementById("listaClientes").innerHTML = clientes.length ? clientes.map(c => `<tr data-cliente-id="${escaparHtmlAdmin(c.id)}"><td>${escaparHtmlAdmin(c.nome)}</td><td>${escaparHtmlAdmin(cpfProtegidoAdmin(c.cpf))}</td><td>${escaparHtmlAdmin(c.telefone)}</td><td><button class="botaoTabela" data-id="${escaparHtmlAdmin(c.id)}">Editar</button></td></tr>`).join("") : '<tr><td colspan="4">Nenhum cliente cadastrado.</td></tr>';
     document.querySelectorAll(".botaoTabela[data-id]").forEach(botao => botao.addEventListener("click", () => editarCliente(botao.dataset.id)));
     const statusSelecionado = document.getElementById("filtroStatus")?.value || "pendentes";
     const chamadosVisiveis = chamadosAdmin.filter(chamado => statusSelecionado === "todos" || (statusSelecionado === "pendentes" && chamado.status !== "Resolvido") || chamado.status === statusSelecionado || (statusSelecionado === "Emergência" && /emerg/i.test(chamado.status || "")));
@@ -53,18 +58,18 @@ function aplicarFiltros() {
     const status = document.getElementById("filtroStatus").value;
     const idsEncontrados = new Set(clientesAdmin.filter(c => !busca || c.nome.toLowerCase().includes(busca) || c.cpf.includes(busca)).map(c => c.id));
     const chamados = chamadosAdmin.filter(c => idsEncontrados.has(c.idoso_id) && (status === "todos" || (status === "pendentes" && c.status !== "Resolvido") || c.status === status));
-    document.querySelectorAll("#listaClientes tr").forEach(linha => { const texto = linha.textContent.toLowerCase(); linha.hidden = Boolean(busca && !texto.includes(busca)); });
+    document.querySelectorAll("#listaClientes tr[data-cliente-id]").forEach(linha => { linha.hidden = Boolean(busca && !idsEncontrados.has(linha.dataset.clienteId)); });
     renderizarChamados(chamados);
 }
 
 function renderizarChamadosAntigo(lista = chamadosAdmin) {
-    document.getElementById("listaChamadosAdmin").innerHTML = lista.length ? lista.map(c => `<tr><td>${c.idosos?.nome || "Cliente"}</td><td>${new Date(c.criado_em).toLocaleString("pt-BR")}</td><td>${c.latitude ? `<a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank">Ver localização</a>` : "Não registrada"}</td><td><select class="statusSelect" data-chamado="${c.id}"><option ${c.status === "Recebido" ? "selected" : ""}>Recebido</option><option ${c.status === "Em atendimento" ? "selected" : ""}>Em atendimento</option><option ${c.status === "Resolvido" ? "selected" : ""}>Resolvido</option><option ${c.status === "Emergência" ? "selected" : ""}>Emergência</option></select></td><td><button class="botaoTabela salvarStatus" data-chamado="${c.id}">Salvar</button></td></tr>`).join("") : '<tr><td colspan="5">Nenhum chamado encontrado.</td></tr>';
+    document.getElementById("listaChamadosAdmin").innerHTML = lista.length ? lista.map(c => `<tr><td>${escaparHtmlAdmin(c.idosos?.nome || "Cliente")}</td><td>${new Date(c.criado_em).toLocaleString("pt-BR")}</td><td>${c.latitude ? `<a href="https://www.google.com/maps?q=${Number(c.latitude)},${Number(c.longitude)}" target="_blank" rel="noopener noreferrer">Ver localização</a>` : "Não registrada"}</td><td><select class="statusSelect" data-chamado="${escaparHtmlAdmin(c.id)}"><option ${c.status === "Recebido" ? "selected" : ""}>Recebido</option><option ${c.status === "Em atendimento" ? "selected" : ""}>Em atendimento</option><option ${c.status === "Resolvido" ? "selected" : ""}>Resolvido</option><option ${c.status === "Emergência" ? "selected" : ""}>Emergência</option></select></td><td><button class="botaoTabela salvarStatus" data-chamado="${escaparHtmlAdmin(c.id)}">Salvar</button></td></tr>`).join("") : '<tr><td colspan="5">Nenhum chamado encontrado.</td></tr>';
     document.querySelectorAll(".salvarStatus").forEach(botao => botao.addEventListener("click", () => atualizarStatus(botao.dataset.chamado)));
 }
 
 async function atualizarStatusAntigo(id) { const select = document.querySelector(`.statusSelect[data-chamado="${id}"]`); const { error } = await supabaseClient.from("acionamentos").update({ status: select.value }).eq("id", id); if (error) alert(error.message); else { const chamado = chamadosAdmin.find(c => c.id === id); if (chamado) chamado.status = select.value; select.parentElement.nextElementSibling.textContent = "Atualizado"; } }
 
-function renderizarMensagens(mensagens) { document.getElementById("listaMensagens").innerHTML = mensagens.length ? mensagens.map(m => `<article class="mensagemCliente"><strong>${m.assunto}</strong><small>${m.tipo} · ${new Date(m.criado_em).toLocaleString("pt-BR")}</small><p>${m.mensagem}</p>${m.resposta ? `<div class="respostaCliente"><strong>Resposta:</strong> ${m.resposta}</div>` : `<textarea id="resposta-${m.id}" rows="2" placeholder="Digite uma resposta"></textarea><button class="botaoTabela responderMensagem" data-id="${m.id}">Responder</button>`}</article>`).join("") : "Nenhuma mensagem recebida."; document.querySelectorAll(".responderMensagem").forEach(b => b.addEventListener("click", () => responderMensagem(b.dataset.id))); }
+function renderizarMensagens(mensagens) { document.getElementById("listaMensagens").innerHTML = mensagens.length ? mensagens.map(m => `<article class="mensagemCliente"><strong>${escaparHtmlAdmin(m.assunto)}</strong><small>${escaparHtmlAdmin(m.tipo)} · ${new Date(m.criado_em).toLocaleString("pt-BR")}</small><p>${escaparHtmlAdmin(m.mensagem)}</p>${m.resposta ? `<div class="respostaCliente"><strong>Resposta:</strong> ${escaparHtmlAdmin(m.resposta)}</div>` : `<textarea id="resposta-${escaparHtmlAdmin(m.id)}" rows="2" placeholder="Digite uma resposta"></textarea><button class="botaoTabela responderMensagem" data-id="${escaparHtmlAdmin(m.id)}">Responder</button>`}</article>`).join("") : "Nenhuma mensagem recebida."; document.querySelectorAll(".responderMensagem").forEach(b => b.addEventListener("click", () => responderMensagem(b.dataset.id))); }
 
 async function editarCliente(id) {
     const cliente = clientesAdmin.find(c => c.id === id); if (!cliente) return;
@@ -82,14 +87,14 @@ async function salvarCliente(evento) {
     for (const contato of [{ prioridade: 1, prefixo: "familiar1" }, { prioridade: 2, prefixo: "familiar2" }]) { const dados = { nome: valor(`${contato.prefixo}NomeEdicao`), parentesco: valor(`${contato.prefixo}ParentescoEdicao`), telefone: valor(`${contato.prefixo}TelefoneEdicao`), email: valor(`${contato.prefixo}EmailEdicao`) || null }; const { data: familiar } = await supabaseClient.from("familiares").select("id").eq("idoso_id", id).eq("prioridade", contato.prioridade).maybeSingle(); if (familiar) await supabaseClient.from("familiares").update(dados).eq("id", familiar.id); else await supabaseClient.from("familiares").insert({ ...dados, idoso_id: id, prioridade: contato.prioridade }); }
     mostrarMensagem("mensagemEdicao", "Cadastro completo atualizado com sucesso.", "sucesso"); await carregarAdmin();
 }
-async function responderMensagem(id) { const resposta = document.getElementById(`resposta-${id}`).value.trim(); if (!resposta) return; const { error } = await supabaseClient.from("mensagens").update({ resposta, status: "respondida", respondido_em: new Date().toISOString() }).eq("id", id); if (error) alert(error.message); else await carregarAdmin(); }
+async function responderMensagem(id) { const resposta = document.getElementById(`resposta-${id}`).value.trim(); if (!resposta) return; const { error } = await supabaseClient.rpc("responder_mensagem_admin", { p_mensagem_id: id, p_resposta: resposta }); if (error) alert("Não foi possível enviar a resposta. Verifique sua permissão e tente novamente."); else await carregarAdmin(); }
 function valor(id) { return document.getElementById(id).value.trim(); } function mostrarMensagem(id, texto, tipo) { const e = document.getElementById(id); e.textContent = texto; e.setAttribute("data-tipo", tipo); }
 
 /* Os status ficam pendentes na tela até o único botão de salvamento ser usado. */
 function renderizarChamados(lista = chamadosAdmin) {
     document.getElementById("listaChamadosAdmin").innerHTML = lista.length ? lista.map(c => {
         const statusAtual = alteracoesChamados.get(c.id) || c.status;
-        return `<tr><td>${c.idosos?.nome || "Cliente"}</td><td>${new Date(c.criado_em).toLocaleString("pt-BR")}</td><td>${c.latitude ? `<a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank">Ver localização</a>` : "Não registrada"}</td><td><select class="statusSelect" data-chamado="${c.id}"><option ${statusAtual === "Recebido" ? "selected" : ""}>Recebido</option><option ${statusAtual === "Em atendimento" ? "selected" : ""}>Em atendimento</option><option ${statusAtual === "Resolvido" ? "selected" : ""}>Resolvido</option><option ${statusAtual === "Emergência" ? "selected" : ""}>Emergência</option></select></td><td>${alteracoesChamados.has(c.id) ? "Pendente" : "Salvo"}</td></tr>`;
+        return `<tr><td>${escaparHtmlAdmin(c.idosos?.nome || "Cliente")}</td><td>${new Date(c.criado_em).toLocaleString("pt-BR")}</td><td>${c.latitude ? `<a href="https://www.google.com/maps?q=${Number(c.latitude)},${Number(c.longitude)}" target="_blank" rel="noopener noreferrer">Ver localização</a>` : "Não registrada"}</td><td><select class="statusSelect" data-chamado="${escaparHtmlAdmin(c.id)}"><option ${statusAtual === "Recebido" ? "selected" : ""}>Recebido</option><option ${statusAtual === "Em atendimento" ? "selected" : ""}>Em atendimento</option><option ${statusAtual === "Resolvido" ? "selected" : ""}>Resolvido</option><option ${statusAtual === "Emergência" ? "selected" : ""}>Emergência</option></select></td><td>${alteracoesChamados.has(c.id) ? "Pendente" : "Salvo"}</td></tr>`;
     }).join("") : '<tr><td colspan="5">Nenhum chamado encontrado.</td></tr>';
     document.querySelectorAll(".statusSelect").forEach(select => select.addEventListener("change", () => registrarAlteracaoStatus(select.dataset.chamado, select.value)));
     atualizarIndicadorAlteracoes();

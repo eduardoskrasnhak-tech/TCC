@@ -11,11 +11,11 @@
     }
 
     function formatarRg(valor) {
-        const n = somenteNumeros(valor).slice(0, 10);
-        if (n.length <= 3) return n;
-        if (n.length <= 6) return `${n.slice(0, 3)}.${n.slice(3)}`;
-        if (n.length <= 9) return `${n.slice(0, 3)}.${n.slice(3, 6)}.${n.slice(6)}`;
-        return `${n.slice(0, 3)}.${n.slice(3, 6)}.${n.slice(6, 9)}-${n.slice(9)}`;
+        const n = somenteNumeros(valor).slice(0, 9);
+        if (n.length <= 2) return n;
+        if (n.length <= 5) return `${n.slice(0, 2)}.${n.slice(2)}`;
+        if (n.length <= 8) return `${n.slice(0, 2)}.${n.slice(2, 5)}.${n.slice(5)}`;
+        return `${n.slice(0, 2)}.${n.slice(2, 5)}.${n.slice(5, 8)}-${n.slice(8)}`;
     }
 
     function formatarTelefone(valor) {

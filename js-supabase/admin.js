@@ -40,7 +40,9 @@ async function carregarAdmin() {
     document.getElementById("totalClientes").textContent = clientes.length; document.getElementById("totalChamadosAdmin").textContent = chamadosAdmin.length; document.getElementById("totalMensagens").textContent = mensagens.filter(m => m.status === "aberta").length;
     document.getElementById("listaClientes").innerHTML = clientes.length ? clientes.map(c => `<tr><td>${c.nome}</td><td>${c.cpf}</td><td>${c.telefone}</td><td><button class="botaoTabela" data-id="${c.id}">Editar</button></td></tr>`).join("") : '<tr><td colspan="4">Nenhum cliente cadastrado.</td></tr>';
     document.querySelectorAll(".botaoTabela[data-id]").forEach(botao => botao.addEventListener("click", () => editarCliente(botao.dataset.id)));
-    renderizarChamados(); renderizarMensagens(mensagens);
+    const statusSelecionado = document.getElementById("filtroStatus")?.value || "pendentes";
+    const chamadosVisiveis = chamadosAdmin.filter(chamado => statusSelecionado === "todos" || (statusSelecionado === "pendentes" && chamado.status !== "Resolvido") || chamado.status === statusSelecionado || (statusSelecionado === "Emergência" && /emerg/i.test(chamado.status || "")));
+    renderizarChamados(chamadosVisiveis); renderizarMensagens(mensagens);
 }
 
 // =====================================================
@@ -50,7 +52,7 @@ function aplicarFiltros() {
     const busca = document.getElementById("buscaCliente").value.trim().toLowerCase();
     const status = document.getElementById("filtroStatus").value;
     const idsEncontrados = new Set(clientesAdmin.filter(c => !busca || c.nome.toLowerCase().includes(busca) || c.cpf.includes(busca)).map(c => c.id));
-    const chamados = chamadosAdmin.filter(c => idsEncontrados.has(c.idoso_id) && (status === "todos" || c.status === status));
+    const chamados = chamadosAdmin.filter(c => idsEncontrados.has(c.idoso_id) && (status === "todos" || (status === "pendentes" && c.status !== "Resolvido") || c.status === status));
     document.querySelectorAll("#listaClientes tr").forEach(linha => { const texto = linha.textContent.toLowerCase(); linha.hidden = Boolean(busca && !texto.includes(busca)); });
     renderizarChamados(chamados);
 }

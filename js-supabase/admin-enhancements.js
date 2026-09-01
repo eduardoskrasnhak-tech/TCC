@@ -11,7 +11,7 @@
         const clientes = typeof clientesAdmin !== "undefined" ? clientesAdmin : [];
         const chamados = typeof chamadosAdmin !== "undefined" ? chamadosAdmin : [];
         const ids = new Set(clientes.filter(cliente => !busca || cliente.nome.toLowerCase().includes(busca) || String(cliente.cpf || "").includes(busca)).map(cliente => cliente.id));
-        const filtrados = chamados.filter(chamado => ids.has(chamado.idoso_id) && (status === "todos" || chamado.status === status || (status === "Emergência" && /emerg/i.test(chamado.status || ""))) && (tipo === "todos" || chamado.event_type === tipo) && (!inicio || new Date(chamado.occurred_at || chamado.criado_em) >= new Date(`${inicio}T00:00:00`)));
+        const filtrados = chamados.filter(chamado => ids.has(chamado.idoso_id) && (status === "todos" || (status === "pendentes" && chamado.status !== "Resolvido") || chamado.status === status || (status === "Emergência" && /emerg/i.test(chamado.status || ""))) && (tipo === "todos" || chamado.event_type === tipo) && (!inicio || new Date(chamado.occurred_at || chamado.criado_em) >= new Date(`${inicio}T00:00:00`)));
         if (typeof window.renderizarChamados === "function") window.renderizarChamados(filtrados);
         document.querySelectorAll("#listaClientes tr").forEach(linha => { const texto = linha.textContent.toLowerCase(); linha.hidden = Boolean(busca && !texto.includes(busca)); });
         paginarClientes();
@@ -103,6 +103,22 @@
         document.getElementById("filtroDataChamado")?.addEventListener("change", aplicarFiltrosAprimorados);
         document.getElementById("buscaCliente")?.addEventListener("input", () => window.setTimeout(aplicarFiltrosAprimorados, 0));
         document.getElementById("filtroStatus")?.addEventListener("change", () => window.setTimeout(aplicarFiltrosAprimorados, 0));
+        document.querySelectorAll(".filtroStatusChamado").forEach(botao => botao.addEventListener("click", () => {
+            const seletor = document.getElementById("filtroStatus");
+            if (!seletor) return;
+            seletor.value = botao.dataset.status;
+            document.querySelectorAll(".filtroStatusChamado").forEach(item => item.classList.toggle("ativo", item === botao));
+            const titulo = document.getElementById("tituloListaChamadosAdmin");
+            const descricao = document.getElementById("descricaoListaChamadosAdmin");
+            const textos = {
+                pendentes: ["Chamados pendentes", "Acompanhe as solicitações que ainda precisam de atendimento."],
+                Resolvido: ["Chamados resolvidos", "Consulte os atendimentos concluídos nas últimas 24 horas."],
+                todos: ["Todos os chamados", "Consulte os chamados operacionais disponíveis no painel."]
+            };
+            if (titulo) titulo.textContent = textos[botao.dataset.status][0];
+            if (descricao) descricao.textContent = textos[botao.dataset.status][1];
+            aplicarFiltrosAprimorados();
+        }));
         document.getElementById("exportarChamadosCsv")?.addEventListener("click", exportarChamadosCsv);
         document.querySelectorAll(".filtroMensagemAdmin").forEach(botao => botao.addEventListener("click", () => { filtroMensagemAdmin = botao.dataset.filtroMensagemAdmin; document.querySelectorAll(".filtroMensagemAdmin").forEach(item => item.classList.toggle("ativo", item === botao)); aplicarFiltroMensagens(); }));
         new MutationObserver(aplicarFiltroMensagens).observe(document.getElementById("listaMensagens"), { childList: true, subtree: true });

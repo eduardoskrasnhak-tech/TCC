@@ -811,9 +811,9 @@ body::before { opacity: .2; background-image: linear-gradient(rgba(93, 153, 214,
 .chamadoAtivo > p { color: #f0c8cf; margin: 8px 0; }
 .acoesChamadoAtivo { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
 .acoesChamadoAtivo .botaoFormulario { margin: 0; }
-.filtrosHistorico { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
-.filtroHistorico { padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px; color: #abc0d5; background: rgba(5, 13, 24, .35); cursor: pointer; font: inherit; font-size: 13px; }
-.filtroHistorico:hover, .filtroHistorico.ativo { color: #fff; border-color: rgba(98, 174, 255, .6); background: rgba(47, 121, 206, .25); }
+.filtrosHistorico, .filtrosStatusChamados { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.filtroHistorico, .filtroStatusChamado { padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px; color: #abc0d5; background: rgba(5, 13, 24, .35); cursor: pointer; font: inherit; font-size: 13px; }
+.filtroHistorico:hover, .filtroHistorico.ativo, .filtroStatusChamado:hover, .filtroStatusChamado.ativo { color: #fff; border-color: rgba(98, 174, 255, .6); background: rgba(47, 121, 206, .25); }
 .statusPainel.statusAguardando { background: rgba(193, 139, 44, .2); color: #f7c873; }
 .statusPainel.statusAtendimento { background: rgba(49, 113, 184, .24); color: #a9d5ff; }
 .statusPainel.statusResolvido { background: rgba(41, 156, 123, .2); color: #91f4d2; }

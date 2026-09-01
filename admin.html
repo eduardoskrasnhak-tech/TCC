@@ -49,6 +49,7 @@
             <div class="campoFiltro"><label for="buscaCliente">Buscar cliente</label><input id="buscaCliente"
                     type="search" placeholder="Digite o nome ou CPF"></div>
             <div class="campoFiltro"><label for="filtroStatus">Filtrar por status</label><select id="filtroStatus">
+                    <option value="pendentes" selected>Pendentes</option>
                     <option value="todos">Todos os status</option>
                     <option value="Recebido">Recebido</option>
                     <option value="Em atendimento">Em atendimento</option>
@@ -127,8 +128,9 @@
         <section class="painelCard">
             <div class="cabecalhoCard">
                 <div>
-                    <h2>Chamados recentes</h2>
-                    <p>Acompanhe localização, status e evolução dos atendimentos.</p>
+                    <h2 id="tituloListaChamadosAdmin">Chamados pendentes</h2>
+                    <p id="descricaoListaChamadosAdmin">Acompanhe as solicitações que ainda precisam de atendimento.</p>
+                    <div class="filtrosStatusChamados" role="group" aria-label="Visualização dos chamados"><button class="filtroStatusChamado ativo" data-status="pendentes" type="button">Pendentes</button><button class="filtroStatusChamado" data-status="Resolvido" type="button">Resolvidos</button><button class="filtroStatusChamado" data-status="todos" type="button">Todos os chamados</button></div>
                 </div>
                 <div class="acoesChamados"><span id="indicadorAlteracoes" class="indicadorAlteracoes" hidden>Alteracoes pendentes</span><button id="salvarAlteracoesChamados" class="botaoFormulario botaoSalvarChamados" type="button" disabled>Salvar alteracoes</button></div>
             </div>

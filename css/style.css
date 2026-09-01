@@ -965,7 +965,19 @@ body::before { opacity: .2; background-image: linear-gradient(rgba(93, 153, 214,
 .detalheChamado .botaoTabela { display: inline-block; margin-bottom: 2px; }
 .estadoAlteracao { display: grid; justify-items: start; gap: 6px; }
 .estadoAlteracao .botaoTabela { margin: 0; }
-@media (max-width: 600px) { .detalhesChamadoGrid { grid-template-columns: 1fr; } .modalPainel { padding: 12px; } .modalPainelConteudo { padding: 20px; } }
+.acoesDetalhesChamado { display: flex; justify-content: flex-end; margin-top: 18px; }
+.acoesDetalhesChamado .botaoFormulario { width: auto; margin: 0; }
+.resumoNotificacoes { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.resumoNotificacoes span { padding: 5px 9px; border: 1px solid var(--border); border-radius: 999px; color: #abc0d5; background: rgba(5, 13, 24, .35); font-size: 12px; white-space: nowrap; }
+.resumoNotificacoes .falhas { border-color: rgba(215, 47, 98, .42); color: #ffb3c0; }
+.linhaTempoChamado { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+.etapaChamado { position: relative; padding: 11px 10px 11px 28px; border: 1px solid var(--border); border-radius: 9px; color: var(--muted-foreground); background: rgba(5, 13, 24, .3); font-size: 13px; }
+.etapaChamado::before { content: ""; position: absolute; top: 50%; left: 11px; width: 9px; height: 9px; border: 2px solid #71839a; border-radius: 50%; transform: translateY(-50%); }
+.etapaChamado.concluida { color: #cfe8ff; border-color: rgba(98, 174, 255, .45); }
+.etapaChamado.concluida::before { border-color: #71baff; background: #71baff; }
+.etapaChamado.atual { color: #fff; border-color: rgba(247, 200, 115, .6); background: rgba(193, 139, 44, .13); }
+.etapaChamado.atual::before { border-color: #f7c873; background: #f7c873; box-shadow: 0 0 0 4px rgba(247, 200, 115, .13); }
+@media (max-width: 600px) { .detalhesChamadoGrid, .linhaTempoChamado { grid-template-columns: 1fr; } .modalPainel { padding: 12px; } .modalPainelConteudo { padding: 20px; } }
 
 /* Recursos de comunicação, conta e relatórios. */
 .filtrosMensagens { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }

@@ -17,11 +17,15 @@
 
     function atualizarResumo() {
         const chamados = chamadosAtuais();
-        const andamento = chamados.filter(chamado => chamado.status !== "Resolvido");
+        const andamento = chamados.filter(chamado => chamado.status !== "Resolvido").sort((a, b) => {
+            const prioridadeA = /emerg/i.test(String(a.status || "")) || a.event_type === "emergency" ? 1 : 0;
+            const prioridadeB = /emerg/i.test(String(b.status || "")) || b.event_type === "emergency" ? 1 : 0;
+            return prioridadeB - prioridadeA || new Date(b.criado_em) - new Date(a.criado_em);
+        });
         const total = document.getElementById("totalChamadosAndamento");
         const descricao = document.getElementById("descricaoChamadosAndamento");
         if (total) total.textContent = andamento.length;
-        if (descricao) descricao.textContent = andamento.length === 1 ? "Solicitação aguardando atendimento" : "Nenhuma solicitação aguardando atendimento";
+        if (descricao) descricao.textContent = andamento.length === 0 ? "Nenhuma solicitação aguardando atendimento" : andamento.length === 1 ? "Solicitação aguardando atendimento" : "Solicitações aguardando atendimento";
 
         const area = document.getElementById("chamadosAtencao");
         const lista = document.getElementById("listaChamadosAtencao");
@@ -152,13 +156,22 @@
         const chamado = calls().find(item => item.id === id);
         const modal = document.getElementById("modalDetalhesChamado");
         const alvo = document.getElementById("conteudoDetalhesChamado");
+        const acoes = document.getElementById("acoesDetalhesChamado");
+        const assumir = document.getElementById("assumirChamado");
         if (!chamado || !modal || !alvo) return;
         const [textoStatus, classeStatus] = statusInfo(chamado.status);
         const data = chamado.occurred_at || chamado.criado_em;
         const temLocal = chamado.latitude != null && chamado.longitude != null;
         const mapa = temLocal ? `https://www.google.com/maps?q=${encodeURIComponent(`${chamado.latitude},${chamado.longitude}`)}` : "";
+        const cliente = typeof clientesAdmin !== "undefined" ? clientesAdmin.find(item => item.id === chamado.idoso_id) : null;
+        const telefone = String(cliente?.telefone || "").replace(/\D/g, "");
+        const telefoneFormatado = telefone.length === 11 ? `(${telefone.slice(0, 2)}) ${telefone.slice(2, 7)}-${telefone.slice(7)}` : (cliente?.telefone || "Não informado");
+        const cpf = String(cliente?.cpf || "").replace(/\D/g, "");
+        const cpfProtegido = cpf.length === 11 ? `***.***.***-${cpf.slice(-2)}` : "Não informado";
         const itens = [
             ["Cliente", chamado.idosos?.nome || "Não identificado"],
+            ["Contato do cliente", telefoneFormatado],
+            ["CPF protegido", cpfProtegido],
             ["Data e hora", data ? new Date(data).toLocaleString("pt-BR") : "Não informada"],
             ["Tipo", chamado.event_type === "emergency" ? "Emergência" : "Solicitação de assistência"],
             ["Origem", chamado.source === "device" ? "Dispositivo físico" : chamado.source === "simulation" ? "Simulação administrativa" : "Painel do usuário"],
@@ -168,6 +181,11 @@
             ["Localização", temLocal ? `<a class="botaoTabela" href="${mapa}" target="_blank" rel="noopener">Abrir no mapa</a><small>${esc(chamado.latitude)}, ${esc(chamado.longitude)}</small>` : "Não registrada"]
         ];
         alvo.innerHTML = itens.map(([label, value]) => `<div class="detalheChamado"><span>${esc(label)}</span><strong>${value.includes("<") ? value : esc(value)}</strong></div>`).join("");
+        if (acoes && assumir) {
+            const podeAssumir = chamado.status !== "Resolvido" && chamado.status !== "Em atendimento";
+            acoes.hidden = !podeAssumir;
+            assumir.dataset.chamado = chamado.id;
+        }
         modal.hidden = false;
     }
 
@@ -210,6 +228,24 @@
         document.getElementById("salvarAlteracoesChamados")?.addEventListener("click", () => registrarAuditoria("atualização", "acionamentos", "Alterações de status salvas"));
         document.getElementById("formEdicao")?.addEventListener("submit", () => registrarAuditoria("atualização", "idosos", "Cadastro de cliente atualizado"));
         document.addEventListener("click", event => { if (event.target.closest(".responderMensagem")) registrarAuditoria("resposta", "mensagens", "Resposta enviada ao cliente"); });
+        document.getElementById("assumirChamado")?.addEventListener("click", async event => {
+            const botao = event.currentTarget;
+            const chamadoId = botao.dataset.chamado;
+            if (!chamadoId || !window.confirm("Assumir este chamado e mudar o status para Em atendimento?")) return;
+            botao.disabled = true;
+            const textoOriginal = botao.textContent;
+            botao.textContent = "Assumindo...";
+            const { error } = await supabaseClient.from("acionamentos").update({ status: "Em atendimento" }).eq("id", chamadoId);
+            if (error) {
+                window.alert(`Não foi possível assumir o chamado: ${error.message}`);
+                botao.disabled = false;
+                botao.textContent = textoOriginal;
+                return;
+            }
+            await registrarAuditoria("atualização", "acionamentos", "Chamado assumido para atendimento");
+            fecharDetalhes();
+            if (typeof carregarAdmin === "function") await carregarAdmin();
+        });
     });
 
     const renderAnterior = window.renderizarChamados;

@@ -121,6 +121,7 @@
         </section>
         <section class="painelCard notificacoesAdmin" aria-labelledby="tituloNotificacoesAdmin">
             <div class="cabecalhoCard"><div><h2 id="tituloNotificacoesAdmin">Fila de notificações</h2><p>Acompanhe os envios para familiares. Reenvios são processados com segurança pelo servidor.</p></div></div>
+            <div id="resumoNotificacoes" class="resumoNotificacoes" aria-label="Resumo da fila de notificações"></div>
             <div class="tabelaResponsiva"><table class="tabelaPainel"><thead><tr><th>Canal</th><th>Destino</th><th>Status</th><th>Detalhe</th><th>Ação</th></tr></thead><tbody id="listaNotificacoesAdmin"><tr><td colspan="5">Carregando notificações...</td></tr></tbody></table></div>
         </section>
         <section class="painelCard">
@@ -229,6 +230,9 @@
                     <button id="fecharDetalhesChamado" class="botaoSecundario" type="button" aria-label="Fechar detalhes">Fechar</button>
                 </div>
                 <div id="conteudoDetalhesChamado" class="detalhesChamadoGrid"></div>
+                <div id="acoesDetalhesChamado" class="acoesDetalhesChamado" hidden>
+                    <button id="assumirChamado" class="botaoFormulario" type="button">Assumir atendimento</button>
+                </div>
             </div>
         </div>
     </main>

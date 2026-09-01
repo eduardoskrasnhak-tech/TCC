@@ -19,6 +19,9 @@ async function inicializarAdmin() {
     window.addEventListener("beforeunload", evento => { if (!avisarSaidaComAlteracoes || !alteracoesChamados.size) return; evento.preventDefault(); evento.returnValue = ""; });
     document.querySelectorAll("a[href]").forEach(link => link.addEventListener("click", evento => { if (!alteracoesChamados.size || link.target === "_blank" || link.href.startsWith("mailto:") || link.href.startsWith("tel:")) return; if (!confirmarSaida()) evento.preventDefault(); else avisarSaidaComAlteracoes = false; }));
     await carregarAdmin();
+    window.setInterval(() => {
+        if (!alteracoesChamados.size) carregarAdmin();
+    }, 15000);
 }
 
 async function carregarAdmin() {

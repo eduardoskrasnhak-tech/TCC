@@ -225,6 +225,20 @@ function renderizarChamadoAtivo() {
     document.getElementById("chamadoAtivoDestinatarios").textContent = `${contarContatos(chamado.destinatarios)} ${contarContatos(chamado.destinatarios) === 1 ? "contato foi avisado" : "contatos foram avisados"}.`;
     const link = document.getElementById("chamadoAtivoLocal");
     if (chamado.latitude && chamado.longitude) { link.href = `https://www.google.com/maps?q=${chamado.latitude},${chamado.longitude}`; link.hidden = false; } else link.hidden = true;
+    const linhaTempo = document.getElementById("linhaTempoChamado");
+    if (linhaTempo) {
+        const emAtendimento = chamado.status === "Em atendimento";
+        const emergencia = /emerg/i.test(String(chamado.status || "")) || chamado.event_type === "emergency";
+        const etapas = [
+            ["Solicitação enviada", true],
+            [emergencia ? "Emergência priorizada" : "Aguardando atendimento", emAtendimento],
+            ["Atendimento concluído", false]
+        ];
+        linhaTempo.innerHTML = etapas.map(([texto, concluida], indice) => {
+            const atual = !concluida && (indice === 1 || (indice === 2 && emAtendimento));
+            return `<span class="etapaChamado ${concluida ? "concluida" : atual ? "atual" : ""}">${texto}</span>`;
+        }).join("");
+    }
     document.getElementById("marcarChamadoResolvido").dataset.chamado = chamado.id;
 }
 

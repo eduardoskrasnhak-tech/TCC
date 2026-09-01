@@ -77,14 +77,24 @@
 
     async function carregarNotificacoes() {
         const lista = document.getElementById("listaNotificacoesAdmin");
+        const resumo = document.getElementById("resumoNotificacoes");
         if (!lista) return;
         const { data, error } = await supabaseClient.from("fila_notificacoes").select("id,canal,destino,status,tentativas,erro,criado_em").order("criado_em", { ascending: false }).limit(30);
-        if (error) { lista.innerHTML = '<tr><td colspan="5">A fila ficará disponível após executar a migração operacional.</td></tr>'; return; }
+        if (error) { lista.innerHTML = '<tr><td colspan="5">A fila ficará disponível após executar a migração operacional.</td></tr>'; if (resumo) resumo.innerHTML = ""; return; }
+        if (resumo) {
+            const totais = (data || []).reduce((resultado, item) => { resultado[item.status] = (resultado[item.status] || 0) + 1; return resultado; }, {});
+            resumo.innerHTML = `<span>${totais.pendente || 0} pendente(s)</span><span>${totais.enviado || 0} enviada(s)</span><span class="falhas">${totais.falhou || 0} falha(s)</span>`;
+        }
         lista.innerHTML = data?.length ? data.map(item => `<tr><td>${esc(item.canal.toUpperCase())}</td><td>${esc(item.destino)}</td><td><span class="statusPainel ${classeNotificacao(item.status)}">${esc(item.status)}</span></td><td>${esc(item.erro || `${item.tentativas} tentativa(s)`)}</td><td>${item.status === "falhou" ? `<button class="botaoTabela reenviarNotificacao" data-id="${item.id}" type="button">Tentar novamente</button>` : "—"}</td></tr>`).join("") : '<tr><td colspan="5">Nenhuma notificação registrada.</td></tr>';
         lista.querySelectorAll(".reenviarNotificacao").forEach(botao => botao.addEventListener("click", async () => {
             if (!window.confirm("Colocar esta notificação novamente na fila de envio?")) return;
             const { error: erro } = await supabaseClient.from("fila_notificacoes").update({ status: "pendente", tentativas: 0, erro: null }).eq("id", botao.dataset.id);
-            if (erro) window.alert(erro.message); else carregarNotificacoes();
+            if (erro) window.alert(erro.message);
+            else {
+                const { data: sessao } = await supabaseClient.auth.getUser();
+                if (sessao?.user?.id) await supabaseClient.from("auditoria_admin").insert({ admin_id: sessao.user.id, acao: "reenvio", entidade: "fila_notificacoes", detalhes: { resumo: "Notificação colocada novamente na fila" } });
+                carregarNotificacoes();
+            }
         }));
     }
 
@@ -103,5 +113,6 @@
             if (typeof clientesAdmin !== "undefined" && clientesAdmin.length) { carregarRelatorio(); carregarNotificacoes(); paginarClientes(); window.clearInterval(aguardarAdmin); }
             else if (++tentativas > 30) { carregarRelatorio(); carregarNotificacoes(); window.clearInterval(aguardarAdmin); }
         }, 300);
+        window.setInterval(carregarNotificacoes, 30000);
     });
 })();

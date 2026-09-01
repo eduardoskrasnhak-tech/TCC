@@ -4,6 +4,13 @@
 let clientesAdmin = [], chamadosAdmin = [];
 const alteracoesChamados = new Map();
 let avisarSaidaComAlteracoes = true;
+const PRAZO_EXIBICAO_RESOLVIDO_MS = 24 * 60 * 60 * 1000;
+
+function deveExibirChamadoOperacional(chamado) {
+    if (chamado.status !== "Resolvido") return true;
+    const resolvidoEm = chamado.resolvido_em || chamado.encerrado_automaticamente_em || chamado.criado_em;
+    return Date.now() - new Date(resolvidoEm).getTime() < PRAZO_EXIBICAO_RESOLVIDO_MS;
+}
 document.addEventListener("DOMContentLoaded", inicializarAdmin);
 
 async function inicializarAdmin() {
@@ -27,10 +34,10 @@ async function inicializarAdmin() {
 async function carregarAdmin() {
     const { data: clientes = [] } = await supabaseClient.from("idosos").select("id,nome,cpf,telefone,rg,data_nascimento").order("criado_em", { ascending: false });
     clientesAdmin = clientes;
-    const { data: chamados = [] } = await supabaseClient.from("acionamentos").select("*, idosos(nome)").order("criado_em", { ascending: false }).limit(10);
-    chamadosAdmin = chamados;
+    const { data: chamados = [] } = await supabaseClient.from("acionamentos").select("*, idosos(nome)").order("criado_em", { ascending: false }).limit(50);
+    chamadosAdmin = chamados.filter(deveExibirChamadoOperacional).slice(0, 10);
     const { data: mensagens = [] } = await supabaseClient.from("mensagens").select("*").order("criado_em", { ascending: false }).limit(30);
-    document.getElementById("totalClientes").textContent = clientes.length; document.getElementById("totalChamadosAdmin").textContent = chamados.length; document.getElementById("totalMensagens").textContent = mensagens.filter(m => m.status === "aberta").length;
+    document.getElementById("totalClientes").textContent = clientes.length; document.getElementById("totalChamadosAdmin").textContent = chamadosAdmin.length; document.getElementById("totalMensagens").textContent = mensagens.filter(m => m.status === "aberta").length;
     document.getElementById("listaClientes").innerHTML = clientes.length ? clientes.map(c => `<tr><td>${c.nome}</td><td>${c.cpf}</td><td>${c.telefone}</td><td><button class="botaoTabela" data-id="${c.id}">Editar</button></td></tr>`).join("") : '<tr><td colspan="4">Nenhum cliente cadastrado.</td></tr>';
     document.querySelectorAll(".botaoTabela[data-id]").forEach(botao => botao.addEventListener("click", () => editarCliente(botao.dataset.id)));
     renderizarChamados(); renderizarMensagens(mensagens);

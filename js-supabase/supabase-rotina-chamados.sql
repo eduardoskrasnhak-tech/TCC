@@ -5,6 +5,31 @@
 alter table public.acionamentos
   add column if not exists encerrado_automaticamente_em timestamptz;
 
+-- Guarda o momento exato da resolução, inclusive quando ela é feita manualmente.
+alter table public.acionamentos
+  add column if not exists resolvido_em timestamptz;
+
+create or replace function public.registrar_data_resolucao_chamado()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.status = 'Resolvido' and old.status is distinct from 'Resolvido' then
+    new.resolvido_em := now();
+  elsif new.status <> 'Resolvido' then
+    new.resolvido_em := null;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists registrar_data_resolucao_chamado on public.acionamentos;
+create trigger registrar_data_resolucao_chamado
+before update of status on public.acionamentos
+for each row execute function public.registrar_data_resolucao_chamado();
+
 create or replace function public.encerrar_chamados_do_dia_anterior()
 returns integer
 language plpgsql

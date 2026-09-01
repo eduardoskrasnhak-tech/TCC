@@ -1,6 +1,6 @@
 // Melhorias complementares da área do usuário: mensagens, contatos e segurança.
 (function () {
-    let filtroMensagem = "todas";
+    let filtroMensagem = "pendentes";
     let mensagensUsuario = [];
 
     const esc = valor => String(valor ?? "").replace(/[&<>"']/g, caractere => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[caractere]));
@@ -77,7 +77,20 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".filtroMensagem").forEach(botao => botao.addEventListener("click", () => { filtroMensagem = botao.dataset.filtroMensagem; document.querySelectorAll(".filtroMensagem").forEach(item => item.classList.toggle("ativo", item === botao)); renderizarMensagensAprimoradas(); }));
+        document.querySelectorAll(".filtroMensagem").forEach(botao => botao.addEventListener("click", () => {
+            filtroMensagem = botao.dataset.filtroMensagem;
+            document.querySelectorAll(".filtroMensagem").forEach(item => item.classList.toggle("ativo", item === botao));
+            const titulo = document.getElementById("tituloMinhasMensagens");
+            const descricao = document.getElementById("descricaoMinhasMensagens");
+            const textos = {
+                pendentes: ["Mensagens aguardando resposta", "Acompanhe as dúvidas e solicitações que ainda aguardam retorno da equipe."],
+                respondidas: ["Mensagens respondidas", "Consulte as respostas enviadas pela equipe P.R.O.T.E.G.E."],
+                todas: ["Todas as mensagens", "Consulte todo o histórico de conversas com a equipe."]
+            };
+            if (titulo) titulo.textContent = textos[filtroMensagem][0];
+            if (descricao) descricao.textContent = textos[filtroMensagem][1];
+            renderizarMensagensAprimoradas();
+        }));
         document.getElementById("adicionarContatoExtra")?.addEventListener("click", abrirFormularioContato);
         document.getElementById("formEmailConta")?.addEventListener("submit", atualizarEmail);
         document.getElementById("formSenhaConta")?.addEventListener("submit", atualizarSenha);

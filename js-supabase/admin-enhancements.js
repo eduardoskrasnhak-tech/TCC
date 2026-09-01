@@ -1,6 +1,6 @@
 // Relatórios, filtros adicionais e organização da central administrativa.
 (function () {
-    let filtroMensagemAdmin = "todas";
+    let filtroMensagemAdmin = "abertas";
     const esc = valor => String(valor ?? "").replace(/[&<>"']/g, caractere => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[caractere]));
 
     function aplicarFiltrosAprimorados() {
@@ -120,7 +120,20 @@
             aplicarFiltrosAprimorados();
         }));
         document.getElementById("exportarChamadosCsv")?.addEventListener("click", exportarChamadosCsv);
-        document.querySelectorAll(".filtroMensagemAdmin").forEach(botao => botao.addEventListener("click", () => { filtroMensagemAdmin = botao.dataset.filtroMensagemAdmin; document.querySelectorAll(".filtroMensagemAdmin").forEach(item => item.classList.toggle("ativo", item === botao)); aplicarFiltroMensagens(); }));
+        document.querySelectorAll(".filtroMensagemAdmin").forEach(botao => botao.addEventListener("click", () => {
+            filtroMensagemAdmin = botao.dataset.filtroMensagemAdmin;
+            document.querySelectorAll(".filtroMensagemAdmin").forEach(item => item.classList.toggle("ativo", item === botao));
+            const titulo = document.getElementById("tituloMensagensAdmin");
+            const descricao = document.getElementById("descricaoMensagensAdmin");
+            const textos = {
+                abertas: ["Mensagens pendentes", "Responda dúvidas e solicitações de auxílio que ainda aguardam retorno."],
+                respondidas: ["Mensagens respondidas", "Consulte as conversas que já receberam resposta da equipe."],
+                todas: ["Todas as mensagens", "Consulte todo o histórico de mensagens dos clientes."]
+            };
+            if (titulo) titulo.textContent = textos[filtroMensagemAdmin][0];
+            if (descricao) descricao.textContent = textos[filtroMensagemAdmin][1];
+            aplicarFiltroMensagens();
+        }));
         new MutationObserver(aplicarFiltroMensagens).observe(document.getElementById("listaMensagens"), { childList: true, subtree: true });
         const tabelaClientes = document.getElementById("listaClientes");
         if (tabelaClientes) new MutationObserver(() => { paginaClientes = 1; paginarClientes(); }).observe(tabelaClientes, { childList: true });

@@ -1,3 +1,9 @@
+// =====================================================
+// FIRMWARE DO WEMOS D1 / ESP8266
+// =====================================================
+// Lê o botão, recebe a posição do GPS e envia a emergência
+// para a API Flask usando Wi-Fi.
+
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <TinyGPSPlus.h>
@@ -15,6 +21,9 @@ const uint8_t GPS_TX_PIN = D7;
 TinyGPSPlus gps;
 SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);
 
+// =====================================================
+// INICIALIZAÇÃO E LOOP PRINCIPAL
+// =====================================================
 void setup() {
   Serial.begin(115200);
   gpsSerial.begin(9600);
@@ -31,6 +40,9 @@ void loop() {
   }
 }
 
+// =====================================================
+// MONTAGEM E ENVIO DO EVENTO
+// =====================================================
 void enviarEmergencia() {
   if (WiFi.status() != WL_CONNECTED || !gps.location.isValid() || !gps.date.isValid() || !gps.time.isValid()) return;
   WiFiClient client;

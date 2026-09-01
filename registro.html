@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar conta | P.R.O.T.E.G.E.</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="paginaAcesso">
     <main class="cartaoAcesso cartaoRegistro" aria-labelledby="tituloRegistro">
         <a class="marcaAcesso" href="index.html">P.R.O.T.E.G.E.</a>
@@ -14,40 +16,104 @@
             <h1 id="tituloRegistro">Crie sua conta</h1>
             <p class="textoAcesso">Cadastre o idoso e configure a rede de cuidado e acionamento.</p>
             <form id="formRegistro">
-                <div class="campoAcesso"><label for="nomeRegistro">Nome completo</label><input id="nomeRegistro" name="nome" type="text" autocomplete="name" placeholder="Digite seu nome" required></div>
-                <div class="campoAcesso"><label for="emailRegistro">E-mail do responsável</label><input id="emailRegistro" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required></div>
+                <div class="campoAcesso"><label for="nomeRegistro">Nome completo</label><input id="nomeRegistro"
+                        name="nome" type="text" autocomplete="name" placeholder="Digite seu nome" required></div>
+                <div class="campoAcesso"><label for="emailRegistro">E-mail do responsável</label><input
+                        id="emailRegistro" name="email" type="email" autocomplete="email" placeholder="seu@email.com"
+                        required></div>
                 <div class="campoDuplo">
-                    <div class="campoAcesso"><label for="rgRegistro">RG</label><input id="rgRegistro" name="rg" type="text" autocomplete="off" placeholder="Número do RG" required></div>
-                    <div class="campoAcesso"><label for="cpfRegistro">CPF</label><input id="cpfRegistro" name="cpf" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" minlength="11" required></div>
+                    <div class="campoAcesso"><label for="rgRegistro">RG</label><input id="rgRegistro" name="rg"
+                            type="text" autocomplete="off" placeholder="Número do RG" required></div>
+                    <div class="campoAcesso"><label for="cpfRegistro">CPF</label><input id="cpfRegistro" name="cpf"
+                            type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00"
+                            minlength="11" required></div>
                 </div>
                 <div class="campoDuplo">
-                    <div class="campoAcesso"><label for="telefoneRegistro">Telefone</label><input id="telefoneRegistro" name="telefone" type="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></div>
-                    <div class="campoAcesso"><label for="dataNascimento">Data de nascimento</label><input id="dataNascimento" name="dataNascimento" type="date" required></div>
+                    <div class="campoAcesso"><label for="telefoneRegistro">Telefone</label><input id="telefoneRegistro"
+                            name="telefone" type="tel" autocomplete="tel" placeholder="+55 (00) 00000-0000" required></div>
+                    <div class="campoAcesso"><label for="dataNascimento">Data de nascimento</label><input
+                            id="dataNascimento" name="dataNascimento" type="date" required></div>
                 </div>
-                <fieldset class="grupoCadastro"><legend>Endereço</legend>
-                    <div class="campoDuplo"><div class="campoAcesso"><label for="cepRegistro">CEP</label><input id="cepRegistro" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" required></div><div class="campoAcesso"><label for="numeroRegistro">Número</label><input id="numeroRegistro" name="numero" type="text" placeholder="Nº" required></div></div>
-                    <div class="campoAcesso"><label for="logradouroRegistro">Rua / avenida</label><input id="logradouroRegistro" name="logradouro" type="text" autocomplete="street-address" placeholder="Nome da rua" required></div>
-                    <div class="campoDuplo"><div class="campoAcesso"><label for="bairroRegistro">Bairro</label><input id="bairroRegistro" name="bairro" type="text" required></div><div class="campoAcesso"><label for="cidadeRegistro">Cidade</label><input id="cidadeRegistro" name="cidade" type="text" autocomplete="address-level2" required></div></div>
-                    <div class="campoDuplo"><div class="campoAcesso"><label for="estadoRegistro">Estado</label><input id="estadoRegistro" name="estado" type="text" maxlength="2" placeholder="UF" required></div><div class="campoAcesso"><label for="complementoRegistro">Complemento</label><input id="complementoRegistro" name="complemento" type="text" placeholder="Apartamento, casa etc."></div></div>
+                <fieldset class="grupoCadastro">
+                    <legend>Endereço</legend>
+                    <div class="campoDuplo">
+                        <div class="campoAcesso"><label for="cepRegistro">CEP</label><input id="cepRegistro" name="cep"
+                                type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000"
+                                required></div>
+                        <div class="campoAcesso"><label for="numeroRegistro">Número</label><input id="numeroRegistro"
+                                name="numero" type="text" placeholder="Nº" required></div>
+                    </div>
+                    <div class="campoAcesso"><label for="logradouroRegistro">Rua / avenida</label><input
+                            id="logradouroRegistro" name="logradouro" type="text" autocomplete="street-address"
+                            placeholder="Nome da rua" required></div>
+                    <div class="campoDuplo">
+                        <div class="campoAcesso"><label for="bairroRegistro">Bairro</label><input id="bairroRegistro"
+                                name="bairro" type="text" required></div>
+                        <div class="campoAcesso"><label for="cidadeRegistro">Cidade</label><input id="cidadeRegistro"
+                                name="cidade" type="text" autocomplete="address-level2" required></div>
+                    </div>
+                    <div class="campoDuplo">
+                        <div class="campoAcesso"><label for="estadoRegistro">Estado</label><input id="estadoRegistro"
+                                name="estado" type="text" maxlength="2" placeholder="UF" required></div>
+                        <div class="campoAcesso"><label for="complementoRegistro">Complemento</label><input
+                                id="complementoRegistro" name="complemento" type="text"
+                                placeholder="Apartamento, casa etc."></div>
+                    </div>
                 </fieldset>
-                <fieldset class="grupoCadastro"><legend>Familiares para acionamento</legend><p class="ajudaCadastro">No primeiro acionamento, o Familiar 1 será avisado. No segundo, os dois contatos serão chamados.</p>
+                <fieldset class="grupoCadastro">
+                    <legend>Familiares para acionamento</legend>
+                    <p class="ajudaCadastro">No primeiro acionamento, o Familiar 1 será avisado. No segundo, os dois
+                        contatos serão chamados.</p>
                     <h2 class="subtituloCadastro">Familiar 1 — contato principal</h2>
-                    <div class="campoDuplo"><div class="campoAcesso"><label for="familiar1Nome">Nome completo</label><input id="familiar1Nome" name="familiar1Nome" type="text" required></div><div class="campoAcesso"><label for="familiar1Parentesco">Parentesco</label><input id="familiar1Parentesco" name="familiar1Parentesco" type="text" placeholder="Filho, filha, cuidador..." required></div></div>
-                    <div class="campoAcesso"><label for="familiar1Telefone">Telefone</label><input id="familiar1Telefone" name="familiar1Telefone" type="tel" placeholder="(00) 00000-0000" required></div><div class="campoAcesso"><label for="familiar1Email">E-mail para alertas</label><input id="familiar1Email" name="familiar1Email" type="email" placeholder="familiar@email.com"></div>
+                    <div class="campoDuplo">
+                        <div class="campoAcesso"><label for="familiar1Nome">Nome completo</label><input
+                                id="familiar1Nome" name="familiar1Nome" type="text" required></div>
+                        <div class="campoAcesso"><label for="familiar1Parentesco">Parentesco</label><input
+                                id="familiar1Parentesco" name="familiar1Parentesco" type="text"
+                                placeholder="Filho, filha, cuidador..." required></div>
+                    </div>
+                    <div class="campoAcesso"><label for="familiar1Telefone">Telefone</label><input
+                            id="familiar1Telefone" name="familiar1Telefone" type="tel" placeholder="+55 (00) 00000-0000"
+                            required></div>
+                    <div class="campoAcesso"><label for="familiar1Email">E-mail para alertas</label><input
+                            id="familiar1Email" name="familiar1Email" type="email" placeholder="familiar@email.com">
+                    </div>
                     <h2 class="subtituloCadastro">Familiar 2 — contato alternativo</h2>
-                    <div class="campoDuplo"><div class="campoAcesso"><label for="familiar2Nome">Nome completo</label><input id="familiar2Nome" name="familiar2Nome" type="text" required></div><div class="campoAcesso"><label for="familiar2Parentesco">Parentesco</label><input id="familiar2Parentesco" name="familiar2Parentesco" type="text" placeholder="Filho, filha, cuidador..." required></div></div>
-                    <div class="campoAcesso"><label for="familiar2Telefone">Telefone</label><input id="familiar2Telefone" name="familiar2Telefone" type="tel" placeholder="(00) 00000-0000" required></div><div class="campoAcesso"><label for="familiar2Email">E-mail para alertas</label><input id="familiar2Email" name="familiar2Email" type="email" placeholder="familiar@email.com"></div>
+                    <div class="campoDuplo">
+                        <div class="campoAcesso"><label for="familiar2Nome">Nome completo</label><input
+                                id="familiar2Nome" name="familiar2Nome" type="text" required></div>
+                        <div class="campoAcesso"><label for="familiar2Parentesco">Parentesco</label><input
+                                id="familiar2Parentesco" name="familiar2Parentesco" type="text"
+                                placeholder="Filho, filha, cuidador..." required></div>
+                    </div>
+                    <div class="campoAcesso"><label for="familiar2Telefone">Telefone</label><input
+                            id="familiar2Telefone" name="familiar2Telefone" type="tel" placeholder="+55 (00) 00000-0000"
+                            required></div>
+                    <div class="campoAcesso"><label for="familiar2Email">E-mail para alertas</label><input
+                            id="familiar2Email" name="familiar2Email" type="email" placeholder="familiar@email.com">
+                    </div>
                 </fieldset>
-                <div class="campoDuplo"><div class="campoAcesso"><label for="senhaRegistro">Senha</label><input id="senhaRegistro" name="senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" minlength="6" required></div><div class="campoAcesso"><label for="confirmarSenha">Confirmar senha</label><input id="confirmarSenha" name="confirmarSenha" type="password" autocomplete="new-password" placeholder="Repita sua senha" minlength="6" required></div></div>
-                <label class="termosAcesso"><input type="checkbox" name="termos" required> Concordo com os termos de uso e a política de privacidade.</label>
-                <button class="botaoFormulario" type="submit">Criar minha conta</button><p id="mensagemRegistro" class="mensagemFormulario" role="status" aria-live="polite"></p>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="senhaRegistro">Senha</label><input id="senhaRegistro"
+                            name="senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"
+                            minlength="6" required></div>
+                    <div class="campoAcesso"><label for="confirmarSenha">Confirmar senha</label><input
+                            id="confirmarSenha" name="confirmarSenha" type="password" autocomplete="new-password"
+                            placeholder="Repita sua senha" minlength="6" required></div>
+                </div>
+                <label class="termosAcesso"><input type="checkbox" name="termos" required> Concordo com os termos de uso
+                    e a <a href="politica-privacidade.html" target="_blank" rel="noopener">política de privacidade</a>.</label>
+                <button class="botaoFormulario" type="submit">Criar minha conta</button>
+                <p id="mensagemRegistro" class="mensagemFormulario" role="status" aria-live="polite"></p>
             </form>
             <p class="rodapeFormulario">Já tem uma conta? <a href="login.html">Entrar</a></p>
             <a class="voltarInicio" href="index.html">← Voltar para o início</a>
         </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="script.js"></script>
+    <script src="js-supabase/supabase-config.js"></script>
+    <script src="js-supabase/mascaras-cadastro.js"></script>
+    <script src="js-supabase/script.js"></script>
 </body>
+
 </html>

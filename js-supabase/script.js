@@ -10,6 +10,13 @@
  */
 
 let contadorAcionamentos = 0;
+const LIMITE_TENTATIVAS_LOGIN = 5;
+const BLOQUEIO_LOGIN_MS = 15 * 60 * 1000;
+
+function chaveTentativasLogin(email) { return `protege-login-${String(email || "").trim().toLowerCase()}`; }
+function lerTentativasLogin(email) { try { return JSON.parse(localStorage.getItem(chaveTentativasLogin(email))) || { tentativas: 0, bloqueadoAte: 0 }; } catch { return { tentativas: 0, bloqueadoAte: 0 }; } }
+function registrarFalhaLogin(email) { const estado = lerTentativasLogin(email); const tentativas = estado.tentativas + 1; const bloqueadoAte = tentativas >= LIMITE_TENTATIVAS_LOGIN ? Date.now() + BLOQUEIO_LOGIN_MS : 0; localStorage.setItem(chaveTentativasLogin(email), JSON.stringify({ tentativas: bloqueadoAte ? 0 : tentativas, bloqueadoAte })); return bloqueadoAte; }
+function limparTentativasLogin(email) { localStorage.removeItem(chaveTentativasLogin(email)); }
 
 document.addEventListener("DOMContentLoaded", function () {
     configurarBotaoAssistencia();
@@ -25,7 +32,7 @@ async function configurarAcessoPublico() {
     const bloqueioHistorico = document.getElementById("bloqueioHistorico");
     const tabelaHistorico = document.getElementById("tabelaHistorico");
     const botaoPainel = document.getElementById("botaoPainel");
-    const secoesProtegidas = ["areaAssistencia", "areaFuncionamento", "secaoHistorico"];
+    const secoesProtegidas = ["areaAcesso", "areaAssistencia", "areaFuncionamento", "secaoHistorico"];
 
     if (botaoAssistencia) botaoAssistencia.disabled = !autenticado;
     if (bloqueioAssistencia) bloqueioAssistencia.hidden = autenticado;
@@ -74,12 +81,25 @@ function configurarFormulariosDeAcesso() {
             evento.preventDefault();
             const email = document.getElementById("emailLogin").value;
             const senha = document.getElementById("senhaLogin").value;
+            const estado = lerTentativasLogin(email);
+            if (estado.bloqueadoAte > Date.now()) {
+                const minutos = Math.max(1, Math.ceil((estado.bloqueadoAte - Date.now()) / 60000));
+                mostrarMensagemFormulario("mensagemLogin", `Muitas tentativas. Aguarde cerca de ${minutos} minuto(s) antes de tentar novamente.`, "erro");
+                return;
+            }
+            const botao = formLogin.querySelector('button[type="submit"]');
+            const textoOriginal = botao?.textContent;
+            if (botao) { botao.disabled = true; botao.textContent = "Entrando..."; }
             const { data: loginData, error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
 
             if (error) {
-                mostrarMensagemFormulario("mensagemLogin", "E-mail ou senha invÃ¡lidos.", "erro");
+                const bloqueadoAte = registrarFalhaLogin(email);
+                mostrarMensagemFormulario("mensagemLogin", bloqueadoAte ? "Muitas tentativas. Por segurança, aguarde 15 minutos antes de tentar novamente." : "E-mail ou senha inválidos.", "erro");
+                if (botao) { botao.disabled = false; botao.textContent = textoOriginal; }
                 return;
             }
+
+            limparTentativasLogin(email);
 
             const { data: perfil } = await supabaseClient
                 .from("perfis")
@@ -124,7 +144,7 @@ function configurarFormulariosDeAcesso() {
             });
 
             if (erroAuth || !cadastroAuth.user) {
-                mostrarMensagemFormulario("mensagemRegistro", erroAuth ? erroAuth.message : "NÃ£o foi possÃ­vel criar a conta.", "erro");
+                mostrarMensagemFormulario("mensagemRegistro", erroAuth ? erroAuth.message : "Não foi possível criar a conta.", "erro");
                 return;
             }
 
@@ -162,6 +182,8 @@ function configurarFormulariosDeAcesso() {
                 { idoso_id: idosoCriado.id, nome: dados.familiar1Nome, parentesco: dados.familiar1Parentesco, telefone: dados.familiar1Telefone, email: dados.familiar1Email || null, prioridade: 1 },
                 { idoso_id: idosoCriado.id, nome: dados.familiar2Nome, parentesco: dados.familiar2Parentesco, telefone: dados.familiar2Telefone, email: dados.familiar2Email || null, prioridade: 2 }
             ]);
+            // Não impede o cadastro caso a migração de consentimento ainda não tenha sido executada.
+            await supabaseClient.from("consentimentos_privacidade").insert({ usuario_id: cadastroAuth.user.id, versao: "2026-09-01" });
 
             mostrarMensagemFormulario("mensagemRegistro", "Cadastro realizado com sucesso!", "sucesso");
             formRegistro.reset();
@@ -176,7 +198,7 @@ function configurarFormulariosDeAcesso() {
             const email = document.getElementById("emailLogin").value.trim();
 
             if (!email) {
-                mostrarMensagemFormulario("mensagemLogin", "Digite seu e-mail para receber o link de recuperaÃ§Ã£o.", "erro");
+            mostrarMensagemFormulario("mensagemLogin", "Digite seu e-mail para receber o link de recuperação.", "erro");
                 return;
             }
 
@@ -189,7 +211,7 @@ function configurarFormulariosDeAcesso() {
                 return;
             }
 
-            mostrarMensagemFormulario("mensagemLogin", "Link de recuperaÃ§Ã£o enviado. Verifique seu e-mail.", "info");
+            mostrarMensagemFormulario("mensagemLogin", "Link de recuperação enviado. Verifique seu e-mail.", "info");
             return;
             mostrarMensagemFormulario("mensagemLogin", "O fluxo de recuperação de senha será disponibilizado em breve.", "info");
         });
@@ -203,7 +225,7 @@ function configurarFormulariosDeAcesso() {
             const confirmarNovaSenha = document.getElementById("confirmarNovaSenha").value;
 
             if (novaSenha !== confirmarNovaSenha) {
-                mostrarMensagemFormulario("mensagemRedefinir", "As senhas nÃ£o coincidem.", "erro");
+            mostrarMensagemFormulario("mensagemRedefinir", "As senhas não coincidem.", "erro");
                 return;
             }
 

@@ -717,6 +717,8 @@ body::before { opacity: .12; background-size: 48px 48px; mask-image: linear-grad
   --primary-foreground: #0b1a2d;
   --ring: #62aeff;
 }
+/* O atributo hidden deve sempre vencer os estilos das seções. */
+[hidden] { display: none !important; }
 body { background: var(--background); color: var(--foreground); }
 body::before { opacity: .2; background-image: linear-gradient(rgba(93, 153, 214, .08) 1px, transparent 1px), linear-gradient(90deg, rgba(93, 153, 214, .08) 1px, transparent 1px); }
 #cabecalho { min-height: 560px; background: radial-gradient(circle at 50% 0%, rgba(55, 139, 255, .2), transparent 34%), linear-gradient(180deg, #102a4b, #081321); border-color: var(--border); }
@@ -744,3 +746,255 @@ body::before { opacity: .2; background-image: linear-gradient(rgba(93, 153, 214,
 .botaoEmergencia { background: linear-gradient(110deg, #ef4444, #c02654); box-shadow: 0 12px 28px rgba(192, 38, 84, .25); }
 .botaoEmergencia:hover { background: linear-gradient(110deg, #fb5b5b, #df3267); box-shadow: 0 16px 36px rgba(192, 38, 84, .36); }
 @media (max-width: 700px) { #cabecalho { min-height: 520px; padding-top: 72px; } #conteudoPrincipal section { padding: 24px; } }
+
+.acoesChamados { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.indicadorAlteracoes { color: #f7c873; font-size: 13px; font-weight: 700; }
+.botaoSalvarChamados { margin: 0; padding: 10px 14px; white-space: nowrap; }
+.botaoSalvarChamados:disabled { cursor: not-allowed; opacity: .45; }
+.statusSelect + * { color: #9bb0c7; font-size: 13px; }
+@media (min-width: 720px) { .cabecalhoCard:has(.acoesChamados) { display: flex; align-items: start; justify-content: space-between; gap: 18px; } .acoesChamados { margin-top: 0; } }
+@media (max-width: 719px) { .acoesChamados { align-items: flex-start; flex-direction: column; } }
+
+/* Estatísticas no canto superior direito do cabeçalho administrativo. */
+@media (min-width: 801px) {
+  .conteudoPainel { position: relative; }
+  .tituloPainel { min-height: 118px; padding-right: 52%; margin-bottom: 25px; }
+  .gradeResumo { position: absolute; top: 0; right: 0; width: 49%; margin: 0; }
+  .resumoUnificado { min-height: 118px; box-sizing: border-box; align-items: center; }
+}
+.estatisticaItem { display: flex; min-width: 0; flex-direction: column; justify-content: center; text-align: center; }
+.estatisticaItem span, .estatisticaItem strong { width: 100%; }
+.resumoUnificado { padding: 18px 12px; }
+.resumoUnificado .estatisticaItem { padding: 4px 12px; border-right: 0; }
+.resumoUnificado .estatisticaItem span { font-size: 13px; }
+.resumoUnificado .estatisticaItem strong { margin-top: 4px; font-size: 26px; }
+@media (max-width: 800px) { .tituloPainel { margin-bottom: 22px; } .gradeResumo { margin-bottom: 22px; } }
+
+/* Ajustes específicos do topo da área do usuário. */
+.paginaUsuario .gradeResumo { gap: 14px; }
+.paginaUsuario .resumoCard { min-height: 104px; padding: 16px 18px; }
+.paginaUsuario .resumoCard span { font-size: 15px; line-height: 1.35; }
+.paginaUsuario .resumoCard strong { margin-top: 5px; font-size: 29px; }
+.paginaUsuario .resumoCard:nth-child(2) strong { font-size: 25px; white-space: nowrap; }
+.paginaUsuario .botaoEmergencia { min-width: 250px; min-height: 92px; padding: 22px 30px; font-size: 17px; line-height: 1.2; }
+@media (max-width: 700px) { .paginaUsuario .botaoEmergencia { width: 100%; min-height: 76px; } .paginaUsuario .resumoCard { min-height: 90px; } }
+
+@media (min-width: 801px) {
+  .paginaUsuario .tituloPainel { position: relative; min-height: 104px; padding-right: 0; justify-content: flex-start; margin-bottom: 48px; }
+  .paginaUsuario .tituloPainel > div:first-child { width: 30%; text-align: center; }
+  .paginaUsuario .tituloPainel .botaoEmergencia { position: absolute; top: 12px; right: 0; }
+  .paginaUsuario .gradeResumo { top: 12px; left: 31%; right: auto; width: 47%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 801px) {
+  .paginaUsuario .resumoCard { min-height: 86px; padding: 12px 10px; }
+  .paginaUsuario .resumoCard span { font-size: 13px; }
+  .paginaUsuario .resumoCard strong { font-size: 25px; }
+  .paginaUsuario .resumoCard:nth-child(2) strong { font-size: 22px; }
+  .paginaUsuario .resumoCard { height: 136px; box-sizing: border-box; }
+  .paginaUsuario .tituloPainel .botaoEmergencia { width: calc(22% - 14px); min-width: 0; height: 136px; min-height: 136px; box-sizing: border-box; padding: 16px; }
+}
+
+.paginaUsuario .resumoCard small { display: block; margin-top: 7px; color: #8fa8c0; font-size: 11px; line-height: 1.35; }
+.paginaUsuario .resumoDispositivo strong { color: #f7c873; font-size: 20px; }
+.cardDispositivo, .chamadoAtivo { margin-bottom: 22px; }
+.cardDispositivo .cabecalhoCard, .chamadoAtivo .cabecalhoCard { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.statusDispositivoGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.indicadorDispositivo { padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .35); }
+.indicadorDispositivo strong, .indicadorDispositivo span, .indicadorDispositivo small { display: block; }
+.indicadorDispositivo strong { color: #dcecff; margin-bottom: 7px; }
+.indicadorDispositivo span { color: #f7c873; font-weight: 700; }
+.indicadorDispositivo small { margin-top: 7px; color: var(--muted-foreground); line-height: 1.4; }
+.statusAtencao { background: rgba(193, 139, 44, .2); color: #f7c873; }
+.chamadoAtivo { border-color: rgba(255, 95, 116, .4); background: linear-gradient(135deg, rgba(74, 24, 40, .76), rgba(22, 25, 43, .94)); }
+.chamadoAtivo h2 { color: #fff1f3; }
+.chamadoAtivo > p { color: #f0c8cf; margin: 8px 0; }
+.acoesChamadoAtivo { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.acoesChamadoAtivo .botaoFormulario { margin: 0; }
+.filtrosHistorico { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.filtroHistorico { padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px; color: #abc0d5; background: rgba(5, 13, 24, .35); cursor: pointer; font: inherit; font-size: 13px; }
+.filtroHistorico:hover, .filtroHistorico.ativo { color: #fff; border-color: rgba(98, 174, 255, .6); background: rgba(47, 121, 206, .25); }
+.statusPainel.statusAguardando { background: rgba(193, 139, 44, .2); color: #f7c873; }
+.statusPainel.statusAtendimento { background: rgba(49, 113, 184, .24); color: #a9d5ff; }
+.statusPainel.statusResolvido { background: rgba(41, 156, 123, .2); color: #91f4d2; }
+.statusPainel.statusEmergencia, .statusPainel.statusFalha { background: rgba(215, 47, 98, .2); color: #ffb3c0; }
+@media (max-width: 800px) { .statusDispositivoGrid { grid-template-columns: 1fr; } .cardDispositivo .cabecalhoCard, .chamadoAtivo .cabecalhoCard { flex-direction: column; } .acoesChamadoAtivo { align-items: stretch; flex-direction: column; } }
+
+.resumoMeuCadastro { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; gap: 18px; margin: 18px 0 12px; padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .38); }
+.itemResumoCadastro { min-width: 0; }
+.itemResumoCadastro span, .itemResumoCadastro strong, .itemResumoCadastro small { display: block; }
+.itemResumoCadastro span { color: #9bb0c7; font-size: 13px; }
+.itemResumoCadastro strong { overflow: hidden; margin-top: 6px; color: #f5f9ff; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
+.itemResumoCadastro small { margin-top: 5px; color: #8198af; font-size: 11px; line-height: 1.3; }
+.resumoMeuCadastro .botaoFormulario { margin: 0; white-space: nowrap; }
+.acoesCadastro { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.acoesCadastro .botaoFormulario { margin: 0; }
+.botaoSecundario { padding: 11px 18px; border: 1px solid var(--border); border-radius: 7px; color: #c6d6e6; background: rgba(5, 13, 24, .4); cursor: pointer; font: inherit; }
+.botaoSecundario:hover { border-color: #62aeff; color: #fff; background: rgba(47, 121, 206, .18); }
+@media (max-width: 800px) { .resumoMeuCadastro { grid-template-columns: 1fr 1fr; } .resumoMeuCadastro .botaoFormulario { grid-column: 1 / -1; } }
+@media (max-width: 480px) { .resumoMeuCadastro { grid-template-columns: 1fr; } .resumoMeuCadastro .botaoFormulario { grid-column: auto; width: 100%; } }
+
+/* Formulário de suporte: campos consistentes com o restante do painel. */
+.paginaUsuario #formMensagem { display: grid; gap: 4px; }
+.paginaUsuario #formMensagem .campoDuplo { grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); gap: 18px; }
+.paginaUsuario #formMensagem .campoAcesso { margin-top: 10px; }
+.paginaUsuario #formMensagem input,
+.paginaUsuario #formMensagem select,
+.paginaUsuario #formMensagem textarea { width: 100%; box-sizing: border-box; color: #f5f9ff; background: rgba(5, 13, 24, .72); border: 1px solid var(--border); border-radius: 8px; font: inherit; }
+.paginaUsuario #formMensagem input,
+.paginaUsuario #formMensagem select { min-height: 48px; padding: 12px 14px; }
+.paginaUsuario #formMensagem select { appearance: auto; cursor: pointer; }
+.paginaUsuario #formMensagem textarea { min-height: 140px; padding: 13px 14px; resize: vertical; line-height: 1.5; }
+.paginaUsuario #formMensagem input:focus,
+.paginaUsuario #formMensagem select:focus,
+.paginaUsuario #formMensagem textarea:focus { outline: 2px solid rgba(98, 174, 255, .25); border-color: #62aeff; }
+.paginaUsuario #formMensagem textarea::placeholder,
+.paginaUsuario #formMensagem input::placeholder { color: #7189a2; }
+.paginaUsuario #formMensagem > .botaoFormulario { width: min(100%, 250px); margin: 14px 0 0; }
+@media (max-width: 700px) { .paginaUsuario #formMensagem .campoDuplo { grid-template-columns: 1fr; gap: 0; } .paginaUsuario #formMensagem > .botaoFormulario { width: 100%; } }
+
+/* Contato que ainda sera definido pelo responsavel do projeto. */
+.contatoPendente { display: flex; flex-direction: column; gap: 3px; padding: 16px; border: 1px solid rgba(99, 177, 255, .2); border-radius: 10px; color: #b9ddff; background: rgba(39, 91, 149, .18); }
+.contatoPendente span { color: #9bb0c7; font-size: 16px; }
+.acoesEdicaoAdmin { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+.acoesEdicaoAdmin .botaoFormulario, .acoesEdicaoAdmin .botaoSecundario { width: auto; margin: 0; }
+@media (max-width: 500px) { .acoesEdicaoAdmin .botaoFormulario, .acoesEdicaoAdmin .botaoSecundario { width: 100%; } }
+.minhasMensagens { margin-bottom: 22px; }
+.estadoMensagens { margin: 0; padding: 16px; border: 1px dashed var(--border); border-radius: 9px; color: var(--muted-foreground); }
+.mensagemUsuario { padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .35); }
+.mensagemUsuario .cabecalhoMensagem { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.mensagemUsuario .cabecalhoMensagem > div { display: grid; gap: 4px; }
+.mensagemUsuario .cabecalhoMensagem strong { color: #f5f9ff; }
+.mensagemUsuario .cabecalhoMensagem small { color: #9bb0c7; }
+.textoMensagemUsuario { margin: 13px 0 !important; color: #d9e8f6 !important; white-space: pre-wrap; }
+.mensagemUsuario .respostaCliente { margin-top: 12px; }
+.mensagemUsuario .respostaCliente small { display: block; margin-top: 7px; color: #9bb0c7; }
+.aguardandoMensagem { color: #f7c873; }
+.mensagemErro { color: #ffb3c0; border-color: rgba(255, 95, 116, .35); }
+@media (max-width: 700px) { .mensagemUsuario .cabecalhoMensagem { align-items: flex-start; flex-direction: column; } }
+
+/* Polimento da central administrativa. */
+.paginaPainel:not(.paginaUsuario) .gradeResumo { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.paginaPainel:not(.paginaUsuario) .resumoCard { min-height: 128px; }
+.paginaPainel:not(.paginaUsuario) .resumoCard small { display: block; margin-top: 8px; color: #9bb0c7; font-size: 12px; line-height: 1.4; }
+.paginaPainel:not(.paginaUsuario) .resumoCard strong { color: #f5f9ff; }
+.resumoAndamento strong { color: #f7c873 !important; }
+.chamadosAtencao { border-color: rgba(255, 95, 116, .42) !important; background: linear-gradient(135deg, rgba(64, 25, 40, .86), rgba(18, 31, 50, .96)) !important; }
+.chamadosAtencao .cabecalhoCard { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.chamadosAtencao h2 { color: #fff1f3 !important; }
+.chamadosAtencao .cabecalhoCard p { color: #eabac3; }
+.listaChamadosAtencao { display: grid; gap: 10px; }
+.itemChamadoAtencao { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 16px; border: 1px solid rgba(255, 145, 158, .22); border-radius: 10px; background: rgba(8, 16, 29, .42); }
+.itemChamadoAtencao > div:first-child { display: grid; gap: 5px; }
+.itemChamadoAtencao strong { color: #fff; }
+.itemChamadoAtencao small { color: #c4a2aa; }
+.itemChamadoAtencao .statusPainel { width: fit-content; }
+.acoesAtencao { display: flex; align-items: center; gap: 14px; }
+.estadoAlteracao { color: #9bb0c7; font-size: 13px; white-space: nowrap; }
+.statusSelect { display: block; margin-top: 7px; min-width: 168px; }
+.tabelaPainel td > .statusPainel { display: inline-block; }
+#cardMensagensPendentes { cursor: pointer; }
+#cardMensagensPendentes:focus { outline: 2px solid #62aeff; outline-offset: 2px; }
+.mensagemCliente { background: linear-gradient(135deg, rgba(18, 39, 66, .9), rgba(9, 20, 35, .94)) !important; border-color: var(--border) !important; border-radius: 12px; }
+.cabecalhoMensagem { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.cabecalhoMensagem > div { display: grid; gap: 4px; }
+.cabecalhoMensagem strong { color: #f5f9ff; font-size: 17px; }
+.cabecalhoMensagem small { color: #9bb0c7 !important; margin: 0 !important; }
+.textoMensagemCliente { margin: 14px 0 !important; color: #d9e8f6 !important; }
+.rotuloResposta { display: block; margin-bottom: 6px; color: #b9cde1; font-size: 13px; font-weight: 700; }
+.mensagemCliente textarea { color: #f5f9ff; background: rgba(5, 13, 24, .72); border-color: var(--border); }
+.mensagemCliente .botaoTabela { display: inline-block; padding: 8px 12px; border: 1px solid var(--border); border-radius: 7px; }
+.respostaCliente { margin-top: 12px; border: 1px solid rgba(84, 211, 155, .2); }
+.respostaCliente p { margin: 5px 0 0; color: #bcebd8 !important; }
+@media (max-width: 900px) { .paginaPainel:not(.paginaUsuario) .gradeResumo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .paginaPainel:not(.paginaUsuario) .gradeResumo { grid-template-columns: 1fr; } .chamadosAtencao .cabecalhoCard, .itemChamadoAtencao, .cabecalhoMensagem { align-items: flex-start; flex-direction: column; } .acoesAtencao { flex-wrap: wrap; } .estadoAlteracao { white-space: normal; } }
+
+/* No admin, os indicadores ocupam uma faixa própria e não sobrepõem os filtros. */
+@media (min-width: 801px) {
+  .paginaPainel:not(.paginaUsuario) .tituloPainel { min-height: auto; padding-right: 0; margin-bottom: 24px; }
+  .paginaPainel:not(.paginaUsuario) .gradeResumo { position: static; top: auto; right: auto; width: 100%; margin: 0 0 22px; }
+}
+.paginaPainel:not(.paginaUsuario) .botaoSalvarChamados:disabled { color: #aebed0; background: rgba(39, 91, 149, .38); border-color: rgba(99, 177, 255, .16); }
+.simuladorAdmin { border-color: rgba(247, 200, 115, .28) !important; }
+.simuladorAdmin .cabecalhoCard { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.simuladorControles { display: flex; align-items: end; gap: 16px; }
+.simuladorControles .campoFiltro { flex: 1 1 340px; margin: 0; }
+.simuladorControles .botaoEmergencia { min-height: 46px; white-space: nowrap; }
+.simuladorAdmin .mensagemFormulario { margin-bottom: 0; }
+@media (max-width: 700px) { .simuladorAdmin .cabecalhoCard, .simuladorControles { align-items: stretch; flex-direction: column; } .simuladorControles .botaoEmergencia { width: 100%; } }
+
+/* Estados do dispositivo e legenda: texto e indicador visual trabalham juntos. */
+.estadoDispositivo { display: flex !important; align-items: center; gap: 8px; }
+.estadoDispositivo::before { content: ""; width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; background: #f7c873; box-shadow: 0 0 0 3px rgba(247, 200, 115, .12); }
+.estadoDispositivo.statusIndisponivel::before { background: #a1a8b3; box-shadow: 0 0 0 3px rgba(161, 168, 179, .12); }
+.legendaStatus { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); color: #9bb0c7; font-size: 12px; }
+.legendaStatus strong { color: #cfe2f5; font-size: 12px; }
+.legendaStatus span { display: inline-flex; align-items: center; gap: 6px; }
+.marcadorStatus { width: 8px; height: 8px; border-radius: 50%; background: #54d39b; }
+.marcadorStatus.aguardando { background: #f7c873; }
+.marcadorStatus.atencao { background: #ff657d; }
+.marcadorStatus.indisponivel { background: #a1a8b3; }
+.statusDispositivoGrid .indicadorDispositivo { min-height: 142px; }
+@media (max-width: 800px) { .legendaStatus { align-items: flex-start; flex-direction: column; } }
+
+/* Localização recebida do dispositivo. */
+.localizacaoAtualCard .cabecalhoCard { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.localizacaoAtualConteudo { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .35); }
+.indicadorLocalizacao { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.indicadorLocalizacao strong, .indicadorLocalizacao small { display: block; }
+.indicadorLocalizacao strong { color: #dcecff; }
+.indicadorLocalizacao small { margin-top: 4px; color: var(--muted-foreground); }
+.marcadorLocalizacao { width: 11px; height: 11px; flex: 0 0 11px; border-radius: 50%; background: #f7c873; box-shadow: 0 0 0 4px rgba(247, 200, 115, .13); }
+.localizacaoAtualCard .botaoTabela { white-space: nowrap; }
+@media (max-width: 700px) { .localizacaoAtualCard .cabecalhoCard, .localizacaoAtualConteudo { align-items: flex-start; flex-direction: column; } .localizacaoAtualCard .botaoTabela { white-space: normal; } }
+
+/* Detalhes e inventário operacional do administrador. */
+.dispositivosAdmin { margin-bottom: 22px; }
+.dispositivosAdmin .ajudaCadastro { margin: 14px 0 0; }
+.modalPainel { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 22px; background: rgba(2, 8, 18, .78); }
+.modalPainel[hidden] { display: none; }
+.modalPainelConteudo { width: min(720px, 100%); max-height: min(720px, 90vh); overflow: auto; padding: 26px; border: 1px solid rgba(99, 177, 255, .32); border-radius: 14px; background: #10253f; box-shadow: 0 22px 70px rgba(0, 0, 0, .42); }
+.modalPainelConteudo .cabecalhoCard { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.modalPainelConteudo .botaoSecundario { flex: 0 0 auto; }
+.detalhesChamadoGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+.detalheChamado { min-width: 0; padding: 14px; border: 1px solid var(--border); border-radius: 9px; background: rgba(5, 13, 24, .4); }
+.detalheChamado span, .detalheChamado strong, .detalheChamado small { display: block; }
+.detalheChamado span { margin-bottom: 6px; color: #9bb0c7; font-size: 12px; }
+.detalheChamado strong { color: #f5f9ff; overflow-wrap: anywhere; }
+.detalheChamado small { margin-top: 7px; color: #9bb0c7; }
+.detalheChamado .botaoTabela { display: inline-block; margin-bottom: 2px; }
+.estadoAlteracao { display: grid; justify-items: start; gap: 6px; }
+.estadoAlteracao .botaoTabela { margin: 0; }
+@media (max-width: 600px) { .detalhesChamadoGrid { grid-template-columns: 1fr; } .modalPainel { padding: 12px; } .modalPainelConteudo { padding: 20px; } }
+
+/* Recursos de comunicação, conta e relatórios. */
+.filtrosMensagens { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.filtroMensagem, .filtroMensagemAdmin { padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px; color: #abc0d5; background: rgba(5, 13, 24, .35); cursor: pointer; font: inherit; font-size: 13px; }
+.filtroMensagem:hover, .filtroMensagem.ativo, .filtroMensagemAdmin:hover, .filtroMensagemAdmin.ativo { border-color: rgba(98, 174, 255, .65); color: #fff; background: rgba(47, 121, 206, .24); }
+.contatosExtras, .segurancaConta, .relatoriosAdmin { margin-bottom: 22px; }
+.listaContatosExtras { display: grid; gap: 10px; }
+.contatoExtra { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .35); }
+.contatoExtra div { display: grid; gap: 4px; min-width: 0; }
+.contatoExtra strong { color: #f5f9ff; }
+.contatoExtra span, .contatoExtra small { color: #9bb0c7; overflow-wrap: anywhere; }
+.formContatoExtra { margin-bottom: 12px; padding: 16px; border: 1px solid rgba(98, 174, 255, .28); border-radius: 10px; background: rgba(18, 39, 66, .52); }
+.gradeSegurancaConta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.formSegurancaConta { display: grid; gap: 10px; padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .35); }
+.formSegurancaConta label { color: #dcecff; font-weight: 700; }
+.formSegurancaConta input { width: 100%; min-height: 45px; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; color: #f5f9ff; background: rgba(5, 13, 24, .72); font: inherit; }
+.formSegurancaConta .botaoSecundario { justify-self: start; }
+.avisoPrivacidade { margin: 16px 0 0; padding: 12px 14px; border-left: 3px solid #62aeff; border-radius: 7px; color: #b9d6ef; background: rgba(47, 121, 206, .13); line-height: 1.5; }
+.gradeRelatorios { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.gradeRelatorios article { padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .35); }
+.gradeRelatorios span, .gradeRelatorios strong { display: block; }
+.gradeRelatorios span { color: #9bb0c7; font-size: 13px; }
+.gradeRelatorios strong { margin-top: 7px; color: #f5f9ff; font-size: 28px; }
+.paginacaoPainel { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 14px; color: #9bb0c7; font-size: 13px; }
+.paginacaoPainel .botaoSecundario { padding: 7px 11px; }
+.paginacaoPainel .botaoSecundario:disabled { cursor: not-allowed; opacity: .5; }
+.politicaPrivacidade { max-width: 760px; }
+.conteudoPrivacidade { display: grid; gap: 8px; margin: 22px 0; color: #c9d9e8; line-height: 1.6; }
+.conteudoPrivacidade h2 { margin: 12px 0 0; color: #f5f9ff; font-size: 19px; }
+.conteudoPrivacidade p { margin: 0; }
+@media (max-width: 800px) { .gradeSegurancaConta, .gradeRelatorios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .gradeSegurancaConta, .gradeRelatorios { grid-template-columns: 1fr; } .contatoExtra { align-items: stretch; flex-direction: column; } .formSegurancaConta .botaoSecundario { width: 100%; } }

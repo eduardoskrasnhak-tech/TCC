@@ -1,11 +1,243 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Painel administrativo | P.R.O.T.E.G.E.</title><link rel="stylesheet" href="style.css"></head>
-<body class="paginaPainel"><header class="cabecalhoPainel"><a class="marcaPainel" href="index.html">P.R.O.T.E.G.E.</a><div><a class="linkPainel" href="dashboard.html">Área do usuário</a><span>Painel administrativo</span><button id="botaoSair" class="botaoSair">Sair</button></div></header>
-<main class="conteudoPainel"><div class="tituloPainel"><div><p class="etiquetaPainel">ADMINISTRAÇÃO</p><h1>Central de atendimento</h1><p>Gerencie clientes, chamados e conversas de suporte.</p></div></div>
-<section class="gradeResumo"><article class="resumoCard"><span>Clientes cadastrados</span><strong id="totalClientes">0</strong></article><article class="resumoCard"><span>Chamados</span><strong id="totalChamadosAdmin">0</strong></article><article class="resumoCard"><span>Mensagens pendentes</span><strong id="totalMensagens">0</strong></article></section>
-<section class="filtrosPainel"><div class="campoFiltro"><label for="buscaCliente">Buscar cliente</label><input id="buscaCliente" type="search" placeholder="Nome ou CPF"></div><div class="campoFiltro"><label for="filtroStatus">Status do chamado</label><select id="filtroStatus"><option value="todos">Todos os status</option><option value="Recebido">Recebido</option><option value="Em atendimento">Em atendimento</option><option value="Resolvido">Resolvido</option><option value="Emergência">Emergência</option></select></div><label class="checkFiltro"><input id="filtroEmergencia" type="checkbox"> Somente emergências</label></section>
-<section class="painelCard"><div class="cabecalhoCard"><div><h2>Cadastros de clientes</h2><p>Selecione um cliente para visualizar e alterar seus dados.</p></div></div><div class="tabelaResponsiva"><table class="tabelaPainel"><thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Ação</th></tr></thead><tbody id="listaClientes"><tr><td colspan="4">Carregando...</td></tr></tbody></table></div></section>
-<section class="painelCard"><div class="cabecalhoCard"><div><h2>Chamados recentes</h2><p>Acompanhe localização, status e evolução dos atendimentos.</p></div></div><div class="tabelaResponsiva"><table class="tabelaPainel"><thead><tr><th>Cliente</th><th>Data</th><th>Local</th><th>Status</th><th>Atualizar</th></tr></thead><tbody id="listaChamadosAdmin"><tr><td colspan="5">Carregando...</td></tr></tbody></table></div></section>
-<section class="painelCard"><div class="cabecalhoCard"><div><h2>Mensagens dos clientes</h2><p>Responda dúvidas e solicitações de auxílio.</p></div></div><div id="listaMensagens" class="listaMensagens">Carregando...</div></section>
-<section id="edicaoCliente" class="painelCard" hidden><div class="cabecalhoCard"><div><h2>Editar cadastro completo</h2><p id="clienteEmEdicao"></p></div></div><form id="formEdicao"><input id="idClienteEdicao" type="hidden"><h3 class="tituloGrupoEdicao">Dados pessoais</h3><div class="campoDuplo"><div class="campoAcesso"><label for="nomeEdicao">Nome completo</label><input id="nomeEdicao" required></div><div class="campoAcesso"><label for="dataNascimentoEdicao">Data de nascimento</label><input id="dataNascimentoEdicao" type="date"></div></div><div class="campoDuplo"><div class="campoAcesso"><label for="rgEdicao">RG</label><input id="rgEdicao" required></div><div class="campoAcesso"><label for="cpfEdicao">CPF</label><input id="cpfEdicao" readonly></div></div><div class="campoAcesso"><label for="telefoneEdicao">Telefone</label><input id="telefoneEdicao" type="tel" required></div><h3 class="tituloGrupoEdicao">Endereço</h3><div class="campoDuplo"><div class="campoAcesso"><label for="cepEdicao">CEP</label><input id="cepEdicao"></div><div class="campoAcesso"><label for="numeroEdicao">Número</label><input id="numeroEdicao"></div></div><div class="campoAcesso"><label for="logradouroEdicao">Rua / avenida</label><input id="logradouroEdicao"></div><div class="campoDuplo"><div class="campoAcesso"><label for="bairroEdicao">Bairro</label><input id="bairroEdicao"></div><div class="campoAcesso"><label for="cidadeEdicao">Cidade</label><input id="cidadeEdicao"></div></div><div class="campoDuplo"><div class="campoAcesso"><label for="estadoEdicao">Estado</label><input id="estadoEdicao" maxlength="2"></div><div class="campoAcesso"><label for="complementoEdicao">Complemento</label><input id="complementoEdicao"></div></div><h3 class="tituloGrupoEdicao">Familiares para acionamento</h3><p class="ajudaCadastro">A ordem define quem será acionado primeiro.</p><div class="campoDuplo"><div class="campoAcesso"><label for="familiar1NomeEdicao">Familiar 1 — nome</label><input id="familiar1NomeEdicao"></div><div class="campoAcesso"><label for="familiar1ParentescoEdicao">Parentesco</label><input id="familiar1ParentescoEdicao"></div></div><div class="campoAcesso"><label for="familiar1TelefoneEdicao">Familiar 1 — telefone</label><input id="familiar1TelefoneEdicao" type="tel"></div><div class="campoDuplo"><div class="campoAcesso"><label for="familiar2NomeEdicao">Familiar 2 — nome</label><input id="familiar2NomeEdicao"></div><div class="campoAcesso"><label for="familiar2ParentescoEdicao">Parentesco</label><input id="familiar2ParentescoEdicao"></div></div><div class="campoAcesso"><label for="familiar2TelefoneEdicao">Familiar 2 — telefone</label><input id="familiar2TelefoneEdicao" type="tel"></div><button class="botaoFormulario">Salvar alterações</button><p id="mensagemEdicao" class="mensagemFormulario"></p></form></section>
-</main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="admin.js"></script></body></html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel administrativo | P.R.O.T.E.G.E.</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="paginaPainel">
+    <header class="cabecalhoPainel"><a class="marcaPainel" href="index.html">P.R.O.T.E.G.E.</a>
+        <div><a class="linkPainel" href="dashboard.html">Área do usuário</a><span>Painel administrativo</span><button
+                id="botaoSair" class="botaoSair">Sair</button></div>
+    </header>
+    <main class="conteudoPainel">
+        <div class="tituloPainel">
+            <div>
+                <p class="etiquetaPainel">ADMINISTRAÇÃO</p>
+                <h1>Central de atendimento</h1>
+                <p>Gerencie clientes, chamados e conversas de suporte.</p>
+            </div>
+        </div>
+        <section class="painelCard simuladorAdmin" aria-labelledby="tituloSimuladorAdmin">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2 id="tituloSimuladorAdmin">Simulação controlada</h2>
+                    <p>Use somente para validar o fluxo enquanto o dispositivo físico não está pronto.</p>
+                </div>
+                <span class="statusPainel statusAtencao">Modo de validação</span>
+            </div>
+            <div class="simuladorControles">
+                <div class="campoFiltro"><label for="clienteSimulacao">Cliente da simulação</label><select id="clienteSimulacao"><option value="">Carregando clientes...</option></select></div>
+                <button id="simularEmergencia" class="botaoEmergencia" type="button">Simular emergência</button>
+            </div>
+            <p id="mensagemSimulacao" class="mensagemFormulario" role="status" aria-live="polite"></p>
+        </section>
+        <section class="gradeResumo">
+            <article class="resumoCard"><span>Clientes cadastrados</span><strong id="totalClientes">0</strong><small>Pessoas cadastradas no sistema</small></article>
+            <article class="resumoCard"><span>Chamados</span><strong id="totalChamadosAdmin">0</strong><small>Solicitações de assistência registradas</small></article>
+            <article id="cardMensagensPendentes" class="resumoCard"><span>Mensagens pendentes</span><strong id="totalMensagens">0</strong><small>Solicitações que aguardam resposta</small></article>
+            <article class="resumoCard resumoAndamento"><span>Chamados em andamento</span><strong id="totalChamadosAndamento">0</strong><small id="descricaoChamadosAndamento">Nenhuma solicitação aguardando atendimento</small></article>
+        </section>
+        <section id="chamadosAtencao" class="painelCard chamadosAtencao" hidden aria-labelledby="tituloChamadosAtencao">
+            <div class="cabecalhoCard"><div><p class="etiquetaPainel">PRIORIDADE DE ATENDIMENTO</p><h2 id="tituloChamadosAtencao">Chamados que precisam de atenção</h2><p>Confira abaixo as solicitações que ainda aguardam atendimento.</p></div><span id="quantidadeChamadosAtencao" class="statusPainel statusEmergencia"></span></div>
+            <div id="listaChamadosAtencao" class="listaChamadosAtencao"></div>
+        </section>
+        <section class="filtrosPainel">
+            <div class="campoFiltro"><label for="buscaCliente">Buscar cliente</label><input id="buscaCliente"
+                    type="search" placeholder="Digite o nome ou CPF"></div>
+            <div class="campoFiltro"><label for="filtroStatus">Filtrar por status</label><select id="filtroStatus">
+                    <option value="todos">Todos os status</option>
+                    <option value="Recebido">Recebido</option>
+                    <option value="Em atendimento">Em atendimento</option>
+                    <option value="Resolvido">Resolvido</option>
+                    <option value="Emergência">Emergência</option>
+                </select></div>
+            <div class="campoFiltro"><label for="filtroTipoChamado">Tipo de chamado</label><select id="filtroTipoChamado"><option value="todos">Todos os tipos</option><option value="assistance">Assistência</option><option value="emergency">Emergência</option></select></div>
+            <div class="campoFiltro"><label for="filtroDataChamado">A partir de</label><input id="filtroDataChamado" type="date"></div>
+        </section>
+        <section class="painelCard relatoriosAdmin" aria-labelledby="tituloRelatoriosAdmin">
+            <div class="cabecalhoCard"><div><h2 id="tituloRelatoriosAdmin">Resumo e relatórios</h2><p>Indicadores consolidados dos chamados registrados no sistema.</p></div><button id="exportarChamadosCsv" class="botaoSecundario" type="button">Exportar chamados CSV</button></div>
+            <div class="gradeRelatorios"><article><span>Total registrado</span><strong id="relatorioTotalChamados">—</strong></article><article><span>Chamados hoje</span><strong id="relatorioChamadosHoje">—</strong></article><article><span>Resolvidos</span><strong id="relatorioResolvidos">—</strong></article><article><span>Em andamento</span><strong id="relatorioAndamento">—</strong></article><article><span>Emergências</span><strong id="relatorioEmergencias">—</strong></article><article><span>Tempo médio de resposta</span><strong id="relatorioTempoResposta">—</strong></article></div>
+            <p id="mensagemRelatorioAdmin" class="mensagemFormulario" role="status"></p>
+        </section>
+        <section class="painelCard">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2>Cadastros de clientes</h2>
+                    <p>Selecione um cliente para visualizar e alterar seus dados.</p>
+                </div>
+            </div>
+            <div class="tabelaResponsiva">
+                <table class="tabelaPainel">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaClientes">
+                        <tr>
+                            <td colspan="4">Carregando...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="paginacaoClientes" class="paginacaoPainel" aria-label="Paginação de clientes"></div>
+        </section>
+        <section class="painelCard dispositivosAdmin" aria-labelledby="tituloDispositivosAdmin">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2 id="tituloDispositivosAdmin">Dispositivos cadastrados</h2>
+                    <p>Veja quais equipamentos estão vinculados aos clientes e se estão ativos.</p>
+                </div>
+                <span class="statusPainel statusAtencao">Integração preparada</span>
+            </div>
+            <div class="tabelaResponsiva">
+                <table class="tabelaPainel">
+                    <thead><tr><th>Dispositivo</th><th>Cliente vinculado</th><th>Status</th><th>Cadastrado em</th></tr></thead>
+                    <tbody id="listaDispositivosAdmin"><tr><td colspan="4">Carregando dispositivos...</td></tr></tbody>
+                </table>
+            </div>
+            <p class="ajudaCadastro">O token do equipamento não é exibido no painel. Cadastre ou altere tokens somente no servidor.</p>
+        </section>
+        <section class="painelCard auditoriaAdmin" aria-labelledby="tituloAuditoriaAdmin">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2 id="tituloAuditoriaAdmin">Histórico administrativo</h2>
+                    <p>Registro das ações realizadas pela equipe no sistema.</p>
+                </div>
+            </div>
+            <div class="tabelaResponsiva">
+                <table class="tabelaPainel">
+                    <thead><tr><th>Ação</th><th>Área</th><th>Detalhes</th><th>Data e hora</th></tr></thead>
+                    <tbody id="listaAuditoriaAdmin"><tr><td colspan="4">Carregando histórico...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+        <section class="painelCard notificacoesAdmin" aria-labelledby="tituloNotificacoesAdmin">
+            <div class="cabecalhoCard"><div><h2 id="tituloNotificacoesAdmin">Fila de notificações</h2><p>Acompanhe os envios para familiares. Reenvios são processados com segurança pelo servidor.</p></div></div>
+            <div class="tabelaResponsiva"><table class="tabelaPainel"><thead><tr><th>Canal</th><th>Destino</th><th>Status</th><th>Detalhe</th><th>Ação</th></tr></thead><tbody id="listaNotificacoesAdmin"><tr><td colspan="5">Carregando notificações...</td></tr></tbody></table></div>
+        </section>
+        <section class="painelCard">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2>Chamados recentes</h2>
+                    <p>Acompanhe localização, status e evolução dos atendimentos.</p>
+                </div>
+                <div class="acoesChamados"><span id="indicadorAlteracoes" class="indicadorAlteracoes" hidden>Alteracoes pendentes</span><button id="salvarAlteracoesChamados" class="botaoFormulario botaoSalvarChamados" type="button" disabled>Salvar alteracoes</button></div>
+            </div>
+            <div class="tabelaResponsiva">
+                <table class="tabelaPainel">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Data</th>
+                            <th>Local</th>
+                            <th>Status</th>
+                            <th>Alteracao</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaChamadosAdmin">
+                        <tr>
+                            <td colspan="5">Carregando...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="painelCard">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2>Mensagens dos clientes</h2>
+                    <p>Responda dúvidas e solicitações de auxílio.</p>
+                    <div class="filtrosMensagens" role="group" aria-label="Filtrar mensagens administrativas"><button class="filtroMensagemAdmin ativo" data-filtro-mensagem-admin="todas" type="button">Todas</button><button class="filtroMensagemAdmin" data-filtro-mensagem-admin="abertas" type="button">Aguardando resposta</button><button class="filtroMensagemAdmin" data-filtro-mensagem-admin="respondidas" type="button">Respondidas</button></div>
+                </div>
+            </div>
+            <div id="listaMensagens" class="listaMensagens">Carregando...</div>
+        </section>
+        <section id="edicaoCliente" class="painelCard" hidden>
+            <div class="cabecalhoCard">
+                <div>
+                    <h2>Editar cadastro completo</h2>
+                    <p id="clienteEmEdicao"></p>
+                </div>
+            </div>
+            <form id="formEdicao"><input id="idClienteEdicao" type="hidden">
+                <h3 class="tituloGrupoEdicao">Dados pessoais</h3>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="nomeEdicao">Nome completo</label><input id="nomeEdicao"
+                            required></div>
+                    <div class="campoAcesso"><label for="dataNascimentoEdicao">Data de nascimento</label><input
+                            id="dataNascimentoEdicao" type="date"></div>
+                </div>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="rgEdicao">RG</label><input id="rgEdicao" required></div>
+                    <div class="campoAcesso"><label for="cpfEdicao">CPF</label><input id="cpfEdicao" readonly></div>
+                </div>
+                <div class="campoAcesso"><label for="telefoneEdicao">Telefone</label><input id="telefoneEdicao"
+                        type="tel" required></div>
+                <h3 class="tituloGrupoEdicao">Endereço</h3>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="cepEdicao">CEP</label><input id="cepEdicao"></div>
+                    <div class="campoAcesso"><label for="numeroEdicao">Número</label><input id="numeroEdicao"></div>
+                </div>
+                <div class="campoAcesso"><label for="logradouroEdicao">Rua / avenida</label><input
+                        id="logradouroEdicao"></div>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="bairroEdicao">Bairro</label><input id="bairroEdicao"></div>
+                    <div class="campoAcesso"><label for="cidadeEdicao">Cidade</label><input id="cidadeEdicao"></div>
+                </div>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="estadoEdicao">Estado</label><input id="estadoEdicao"
+                            maxlength="2"></div>
+                    <div class="campoAcesso"><label for="complementoEdicao">Complemento</label><input
+                            id="complementoEdicao"></div>
+                </div>
+                <h3 class="tituloGrupoEdicao">Familiares para acionamento</h3>
+                <p class="ajudaCadastro">A ordem define quem será acionado primeiro.</p>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="familiar1NomeEdicao">Familiar 1 — nome</label><input
+                            id="familiar1NomeEdicao"></div>
+                    <div class="campoAcesso"><label for="familiar1ParentescoEdicao">Parentesco</label><input
+                            id="familiar1ParentescoEdicao"></div>
+                </div>
+                <div class="campoAcesso"><label for="familiar1TelefoneEdicao">Familiar 1 — telefone</label><input
+                        id="familiar1TelefoneEdicao" type="tel"></div>
+                <div class="campoAcesso"><label for="familiar1EmailEdicao">Familiar 1 — e-mail</label><input id="familiar1EmailEdicao" type="email"></div>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="familiar2NomeEdicao">Familiar 2 — nome</label><input
+                            id="familiar2NomeEdicao"></div>
+                    <div class="campoAcesso"><label for="familiar2ParentescoEdicao">Parentesco</label><input
+                            id="familiar2ParentescoEdicao"></div>
+                </div>
+                <div class="campoAcesso"><label for="familiar2TelefoneEdicao">Familiar 2 — telefone</label><input
+                        id="familiar2TelefoneEdicao" type="tel"></div>
+                <div class="campoAcesso"><label for="familiar2EmailEdicao">Familiar 2 — e-mail</label><input id="familiar2EmailEdicao" type="email"></div>
+                <div class="acoesEdicaoAdmin"><button class="botaoFormulario" type="submit">Salvar alterações</button><button id="cancelarEdicaoAdmin" class="botaoSecundario" type="button">Cancelar</button></div>
+                <p id="mensagemEdicao" class="mensagemFormulario"></p>
+            </form>
+        </section>
+        <div id="modalDetalhesChamado" class="modalPainel" hidden role="dialog" aria-modal="true" aria-labelledby="tituloDetalhesChamado">
+            <div class="modalPainelConteudo">
+                <div class="cabecalhoCard">
+                    <div><p class="etiquetaPainel">REGISTRO DA OCORRÊNCIA</p><h2 id="tituloDetalhesChamado">Detalhes do chamado</h2></div>
+                    <button id="fecharDetalhesChamado" class="botaoSecundario" type="button" aria-label="Fechar detalhes">Fechar</button>
+                </div>
+                <div id="conteudoDetalhesChamado" class="detalhesChamadoGrid"></div>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js-supabase/supabase-config.js"></script>
+    <script src="js-supabase/mascaras-cadastro.js"></script>
+    <script src="js-supabase/admin.js"></script>
+    <script src="js-supabase/admin-polish.js"></script>
+    <script src="js-supabase/admin-enhancements.js"></script>
+</body>
+
+</html>

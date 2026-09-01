@@ -42,3 +42,16 @@ O Flask converte o status recebido para o mesmo padrão usado pelos painéis e g
 ## Notificações
 
 O envio é configurado por `NOTIFICATION_CHANNELS=email,whatsapp` ou `email,sms`. O e-mail usa SMTP. WhatsApp e SMS usam a API do Twilio; para WhatsApp em testes, o número do familiar precisa estar autorizado no Sandbox do WhatsApp do Twilio. Os telefones devem ser cadastrados com DDD; o backend assume Brasil (`+55`) quando o código do país não for informado.
+
+## Fila e reenvio
+
+Depois de executar `js-supabase/supabase-operacao.sql`, cada envio passa a ser registrado como `enviado` ou `falhou`. Para reprocessar falhas, um agendador seguro pode chamar:
+
+```bash
+curl -X POST http://localhost:5000/api/v1/notifications/process \
+  -H "X-Worker-Token: SEU_NOTIFICATION_WORKER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"limit":50}'
+```
+
+Esse token fica somente no servidor/agendador e nunca no navegador.

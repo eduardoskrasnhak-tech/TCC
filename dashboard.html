@@ -1,20 +1,204 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do usuário | P.R.O.T.E.G.E.</title><link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do usuário | P.R.O.T.E.G.E.</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="paginaPainel">
-    <header class="cabecalhoPainel"><a class="marcaPainel" href="index.html">P.R.O.T.E.G.E.</a><div><a id="linkAdmin" class="linkPainel" href="admin.html" hidden>Administração</a><span id="usuarioLogado"></span><button id="botaoSair" class="botaoSair">Sair</button></div></header>
+
+<body class="paginaPainel paginaUsuario">
+    <header class="cabecalhoPainel"><a class="marcaPainel" href="index.html">P.R.O.T.E.G.E.</a>
+        <div><a id="linkAdmin" class="linkPainel" href="admin.html" hidden>Administração</a><span
+                id="usuarioLogado"></span><button id="botaoSair" class="botaoSair">Sair</button></div>
+    </header>
     <main class="conteudoPainel">
-        <div class="tituloPainel"><div><p class="etiquetaPainel">ÁREA DO USUÁRIO</p><h1>Olá, <span id="nomeUsuario">usuário</span></h1><p>Acompanhe a segurança e os atendimentos do idoso.</p></div><button id="botaoAssistenciaPainel" class="botaoEmergencia">Solicitar assistência</button></div>
-        <section class="gradeResumo"><article class="resumoCard"><span>Chamados realizados</span><strong id="totalChamados">0</strong></article><article class="resumoCard"><span>Último chamado</span><strong id="ultimoChamado">Nenhum</strong></article><article class="resumoCard"><span>Familiares cadastrados</span><strong id="totalFamiliares">0</strong></article></section>
-        <section class="painelCard"><div class="cabecalhoCard"><div><h2>Histórico de solicitações</h2><p>Locais e status dos seus chamados.</p></div></div><div class="tabelaResponsiva"><table class="tabelaPainel"><thead><tr><th>Data</th><th>Local</th><th>Destinatários</th><th>Status</th></tr></thead><tbody id="listaChamados"><tr><td colspan="4">Carregando chamados...</td></tr></tbody></table></div></section>
-        <section class="painelCard"><div class="cabecalhoCard"><div><h2>Fale com o suporte</h2><p>Envie dúvidas ou solicite auxílio à equipe P.R.O.T.E.G.E.</p></div></div><form id="formMensagem"><div class="campoDuplo"><div class="campoAcesso"><label for="assuntoMensagem">Assunto</label><input id="assuntoMensagem" required placeholder="Ex.: Atualizar familiar"></div><div class="campoAcesso"><label for="tipoMensagem">Tipo</label><select id="tipoMensagem"><option>Dúvida</option><option>Solicitação de auxílio</option><option>Problema no cadastro</option></select></div></div><div class="campoAcesso"><label for="textoMensagem">Mensagem</label><textarea id="textoMensagem" rows="4" required placeholder="Descreva como podemos ajudar"></textarea></div><button class="botaoFormulario" type="submit">Enviar mensagem</button><p id="mensagemSuporte" class="mensagemFormulario" role="status"></p></form></section>
+        <div class="tituloPainel">
+            <div>
+                <p class="etiquetaPainel">ÁREA DO USUÁRIO</p>
+                <h1>Olá, <span id="nomeUsuario">usuário</span></h1>
+                <p>Acompanhe a segurança e os atendimentos do idoso.</p>
+            </div><button id="botaoAssistenciaPainel" class="botaoEmergencia">Solicitar assistência</button>
+        </div>
+        <section class="gradeResumo">
+            <article class="resumoCard"><span>Chamados realizados</span><strong id="totalChamados">0</strong><small>Solicitações de assistência feitas</small></article>
+            <article class="resumoCard"><span>Último chamado</span><strong id="ultimoChamado">Nenhum</strong><small>Última solicitação registrada</small></article>
+            <article class="resumoCard"><span>Familiares cadastrados</span><strong id="totalFamiliares">0</strong><small>Contatos que recebem alertas</small>
+            </article>
+        </section>
+        <section class="painelCard cardDispositivo" aria-labelledby="tituloDispositivo">
+            <div class="cabecalhoCard"><div><h2 id="tituloDispositivo">Status do dispositivo</h2><p>Acompanhe a conexão do equipamento e do GPS.</p></div><span class="statusPainel statusAtencao">Integração em preparação</span></div>
+            <div class="statusDispositivoGrid">
+                <div class="indicadorDispositivo"><strong>Conexão</strong><span>Aguardando integração</span><small>A comunicação do dispositivo aparecerá aqui.</small></div>
+                <div class="indicadorDispositivo"><strong>Localização</strong><span>GPS ainda indisponível</span><small>A posição será exibida quando o GPS enviar dados.</small></div>
+                <div class="indicadorDispositivo"><strong>Bateria</strong><span>Informação indisponível</span><small>O nível será informado pelo dispositivo.</small></div>
+            </div>
+        </section>
+        <section id="localizacaoAtualCard" class="painelCard localizacaoAtualCard" aria-labelledby="tituloLocalizacaoAtual">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2 id="tituloLocalizacaoAtual">Localização atual do dispositivo</h2>
+                    <p>Acompanhe a última posição enviada pelo equipamento.</p>
+                </div>
+                <span id="statusLocalizacaoAtual" class="statusPainel statusAtencao">Aguardando localização</span>
+            </div>
+            <div class="localizacaoAtualConteudo">
+                <div class="indicadorLocalizacao"><span class="marcadorLocalizacao" aria-hidden="true"></span><div><strong id="localizacaoAtualTexto">Nenhuma localização recebida</strong><small id="localizacaoAtualHorario">A posição aparecerá aqui quando o dispositivo enviar dados.</small></div></div>
+                <a id="localizacaoAtualLink" class="botaoTabela" href="#" target="_blank" rel="noopener" hidden>Ver localização no mapa</a>
+            </div>
+        </section>
+        <section id="chamadoAtivo" class="painelCard chamadoAtivo" hidden aria-labelledby="tituloChamadoAtivo">
+            <div class="cabecalhoCard"><div><p class="etiquetaPainel">ATENÇÃO</p><h2 id="tituloChamadoAtivo">Solicitação de assistência em andamento</h2><p id="chamadoAtivoStatus">Assistência solicitada</p></div><span class="statusPainel statusAtencao">Em andamento</span></div>
+            <p id="chamadoAtivoHorario"></p><p id="chamadoAtivoDestinatarios"></p>
+            <div class="acoesChamadoAtivo"><a id="chamadoAtivoLocal" class="botaoTabela" href="#" target="_blank" hidden>Ver localização</a><button id="marcarChamadoResolvido" class="botaoFormulario" type="button">Marcar como resolvido</button></div>
+        </section>
+        <section class="painelCard">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2>Histórico de solicitações</h2>
+                    <p>Locais e status dos seus chamados.</p>
+                    <div class="filtrosHistorico" role="group" aria-label="Filtrar histórico"><button class="filtroHistorico ativo" type="button" data-filtro="todos">Todos</button><button class="filtroHistorico" type="button" data-filtro="andamento">Em andamento</button><button class="filtroHistorico" type="button" data-filtro="resolvidos">Resolvidos</button></div>
+                </div>
+            </div>
+            <div class="tabelaResponsiva">
+                <table class="tabelaPainel">
+                    <thead>
+                        <tr>
+                            <th>Data e horário</th>
+                            <th>Localização</th>
+                            <th>Contatos avisados</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaChamados">
+                        <tr>
+                            <td colspan="4">Carregando chamados...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="painelCard">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2>Fale com o suporte</h2>
+                    <p>Envie dúvidas ou solicite auxílio à equipe P.R.O.T.E.G.E.</p>
+                </div>
+            </div>
+            <form id="formMensagem">
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="assuntoMensagem">Assunto</label><input id="assuntoMensagem"
+                            required placeholder="Ex.: Atualizar familiar"></div>
+                    <div class="campoAcesso"><label for="tipoMensagem">Tipo</label><select id="tipoMensagem">
+                            <option>Dúvida</option>
+                            <option>Solicitação de auxílio</option>
+                            <option>Problema no cadastro</option>
+                        </select></div>
+                </div>
+                <div class="campoAcesso"><label for="textoMensagem">Mensagem</label><textarea id="textoMensagem"
+                        rows="4" required placeholder="Descreva como podemos ajudar"></textarea></div><button
+                    class="botaoFormulario" type="submit">Enviar mensagem</button>
+                <p id="mensagemSuporte" class="mensagemFormulario" role="status"></p>
+            </form>
+        </section>
+        <section class="painelCard minhasMensagens" aria-labelledby="tituloMinhasMensagens">
+            <div class="cabecalhoCard">
+                <div>
+                    <h2 id="tituloMinhasMensagens">Minhas mensagens</h2>
+                    <p>Acompanhe suas dúvidas e as respostas da equipe P.R.O.T.E.G.E.</p>
+                    <div class="filtrosMensagens" role="group" aria-label="Filtrar mensagens">
+                        <button class="filtroMensagem ativo" data-filtro-mensagem="todas" type="button">Todas</button>
+                        <button class="filtroMensagem" data-filtro-mensagem="pendentes" type="button">Aguardando resposta</button>
+                        <button class="filtroMensagem" data-filtro-mensagem="respondidas" type="button">Respondidas</button>
+                    </div>
+                </div>
+                <span id="contadorMensagensPendentes" class="statusPainel statusAtencao" hidden></span>
+            </div>
+            <div id="listaMinhasMensagens" class="listaMensagens">
+                <p class="estadoMensagens">Carregando mensagens...</p>
+            </div>
+        </section>
         <section id="editarMeuCadastro" class="painelCard">
-            <div class="cabecalhoCard"><div><h2>Meu cadastro</h2><p>Atualize seus dados, endereço e contatos de acionamento.</p></div></div>
-            <form id="formMeuCadastro"><h3 class="tituloGrupoEdicao">Dados pessoais</h3><div class="campoDuplo"><div class="campoAcesso"><label for="meuNome">Nome</label><input id="meuNome" required></div><div class="campoAcesso"><label for="meuTelefone">Telefone</label><input id="meuTelefone" type="tel" required></div></div><div class="campoAcesso"><label for="meuRg">RG</label><input id="meuRg" required></div><h3 class="tituloGrupoEdicao">Endereço</h3><div class="campoDuplo"><div class="campoAcesso"><label for="meuCep">CEP</label><input id="meuCep"></div><div class="campoAcesso"><label for="meuNumero">Número</label><input id="meuNumero"></div></div><div class="campoAcesso"><label for="meuLogradouro">Rua / avenida</label><input id="meuLogradouro"></div><div class="campoDuplo"><div class="campoAcesso"><label for="meuBairro">Bairro</label><input id="meuBairro"></div><div class="campoAcesso"><label for="meuCidade">Cidade</label><input id="meuCidade"></div></div><div class="campoDuplo"><div class="campoAcesso"><label for="meuEstado">Estado</label><input id="meuEstado" maxlength="2"></div><div class="campoAcesso"><label for="meuComplemento">Complemento</label><input id="meuComplemento"></div></div><h3 class="tituloGrupoEdicao">Familiares para acionamento</h3><div class="campoDuplo"><div class="campoAcesso"><label for="meuFamiliar1Nome">Familiar 1</label><input id="meuFamiliar1Nome"></div><div class="campoAcesso"><label for="meuFamiliar1Parentesco">Parentesco</label><input id="meuFamiliar1Parentesco"></div></div><div class="campoAcesso"><label for="meuFamiliar1Telefone">Telefone do familiar 1</label><input id="meuFamiliar1Telefone" type="tel"></div><div class="campoDuplo"><div class="campoAcesso"><label for="meuFamiliar2Nome">Familiar 2</label><input id="meuFamiliar2Nome"></div><div class="campoAcesso"><label for="meuFamiliar2Parentesco">Parentesco</label><input id="meuFamiliar2Parentesco"></div></div><div class="campoAcesso"><label for="meuFamiliar2Telefone">Telefone do familiar 2</label><input id="meuFamiliar2Telefone" type="tel"></div><button class="botaoFormulario" type="submit">Salvar meu cadastro</button><p id="mensagemMeuCadastro" class="mensagemFormulario" role="status"></p></form>
+            <div class="cabecalhoCard">
+                <div>
+                    <h2>Meu cadastro</h2>
+                    <div id="resumoMeuCadastro" class="resumoMeuCadastro">
+                        <div class="itemResumoCadastro"><span>Nome</span><strong id="resumoNome">—</strong></div>
+                        <div class="itemResumoCadastro"><span>Telefone</span><strong id="resumoTelefone">—</strong></div>
+                        <div class="itemResumoCadastro"><span>RG</span><strong id="resumoRg">—</strong><small>Somente os três números centrais são exibidos.</small></div>
+                        <button id="editarMeuCadastroBotao" class="botaoFormulario" type="button">Alterar cadastro</button>
+                    </div>
+                    <p>Atualize seus dados, endereço e contatos de acionamento.</p>
+                </div>
+            </div>
+            <form id="formMeuCadastro" hidden>
+                <h3 class="tituloGrupoEdicao">Dados pessoais</h3>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="meuNome">Nome</label><input id="meuNome" required></div>
+                    <div class="campoAcesso"><label for="meuTelefone">Telefone</label><input id="meuTelefone" type="tel"
+                            required></div>
+                </div>
+                <div class="campoAcesso"><label for="meuRg">RG</label><input id="meuRg" required></div>
+                <h3 class="tituloGrupoEdicao">Endereço</h3>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="meuCep">CEP</label><input id="meuCep"></div>
+                    <div class="campoAcesso"><label for="meuNumero">Número</label><input id="meuNumero"></div>
+                </div>
+                <div class="campoAcesso"><label for="meuLogradouro">Rua / avenida</label><input id="meuLogradouro">
+                </div>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="meuBairro">Bairro</label><input id="meuBairro"></div>
+                    <div class="campoAcesso"><label for="meuCidade">Cidade</label><input id="meuCidade"></div>
+                </div>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="meuEstado">Estado</label><input id="meuEstado" maxlength="2">
+                    </div>
+                    <div class="campoAcesso"><label for="meuComplemento">Complemento</label><input id="meuComplemento">
+                    </div>
+                </div>
+                <h3 class="tituloGrupoEdicao">Familiares para acionamento</h3>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="meuFamiliar1Nome">Familiar 1</label><input
+                            id="meuFamiliar1Nome"></div>
+                    <div class="campoAcesso"><label for="meuFamiliar1Parentesco">Parentesco</label><input
+                            id="meuFamiliar1Parentesco"></div>
+                </div>
+                <div class="campoAcesso"><label for="meuFamiliar1Telefone">Telefone do familiar 1</label><input
+                        id="meuFamiliar1Telefone" type="tel" placeholder="+55 (00) 00000-0000"></div>
+                <div class="campoAcesso"><label for="meuFamiliar1Email">E-mail do familiar 1</label><input id="meuFamiliar1Email" type="email" placeholder="contato@exemplo.com"></div>
+                <div class="campoDuplo">
+                    <div class="campoAcesso"><label for="meuFamiliar2Nome">Familiar 2</label><input
+                            id="meuFamiliar2Nome"></div>
+                    <div class="campoAcesso"><label for="meuFamiliar2Parentesco">Parentesco</label><input
+                            id="meuFamiliar2Parentesco"></div>
+                </div>
+                <div class="campoAcesso"><label for="meuFamiliar2Telefone">Telefone do familiar 2</label><input
+                        id="meuFamiliar2Telefone" type="tel" placeholder="+55 (00) 00000-0000"></div>
+                <div class="campoAcesso"><label for="meuFamiliar2Email">E-mail do familiar 2</label><input id="meuFamiliar2Email" type="email" placeholder="contato@exemplo.com"></div>
+                <div class="acoesCadastro"><button class="botaoFormulario" type="submit">Salvar meu cadastro</button><button id="cancelarEdicaoCadastro" class="botaoSecundario" type="button">Cancelar</button></div>
+            </form>
+            <p id="mensagemMeuCadastro" class="mensagemFormulario" role="status"></p>
+        </section>
+        <section class="painelCard contatosExtras" aria-labelledby="tituloContatosExtras">
+            <div class="cabecalhoCard"><div><h2 id="tituloContatosExtras">Outros contatos de acionamento</h2><p>Adicione contatos extras. Eles serão chamados depois dos familiares prioritários.</p></div><button id="adicionarContatoExtra" class="botaoSecundario" type="button">Adicionar contato</button></div>
+            <div id="listaContatosExtras" class="listaContatosExtras"><p class="estadoMensagens">Carregando contatos...</p></div>
+            <p id="mensagemContatosExtras" class="mensagemFormulario" role="status"></p>
+        </section>
+        <section class="painelCard segurancaConta" aria-labelledby="tituloSegurancaConta">
+            <div class="cabecalhoCard"><div><h2 id="tituloSegurancaConta">Segurança da conta</h2><p>Atualize seu e-mail ou senha. Alterações de e-mail podem exigir confirmação pelo Supabase.</p></div></div>
+            <div class="gradeSegurancaConta">
+                <form id="formEmailConta" class="formSegurancaConta"><label for="novoEmailConta">E-mail de acesso</label><input id="novoEmailConta" type="email" required><button class="botaoSecundario" type="submit">Atualizar e-mail</button><p id="mensagemEmailConta" class="mensagemFormulario" role="status"></p></form>
+                <form id="formSenhaConta" class="formSegurancaConta"><label for="novaSenhaConta">Nova senha</label><input id="novaSenhaConta" type="password" minlength="8" required placeholder="Mínimo de 8 caracteres"><button class="botaoSecundario" type="submit">Atualizar senha</button><p id="mensagemSenhaConta" class="mensagemFormulario" role="status"></p></form>
+            </div>
+            <p class="avisoPrivacidade">Por segurança, CPF, RG, endereço e localização devem ser acessados apenas por pessoas autorizadas.</p>
         </section>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="dashboard.js"></script>
-</body></html>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js-supabase/supabase-config.js"></script>
+    <script src="js-supabase/mascaras-cadastro.js"></script>
+    <script src="js-supabase/dashboard.js"></script>
+    <script src="js-supabase/dashboard-enhancements.js"></script>
+</body>
+
+</html>

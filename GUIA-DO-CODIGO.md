@@ -8,13 +8,13 @@ Os arquivos HTML representam as telas que o usuário enxerga. Eles contêm a est
 
 | Arquivo | Função |
 | --- | --- |
-| `index.html` | Página pública de apresentação do projeto. Não exige login. |
-| `login.html` | Tela de entrada com e-mail e senha. |
-| `registro.html` | Cadastro da conta e dos dados do idoso, endereço e familiares. |
-| `reset-password.html` | Tela para definir uma nova senha. |
-| `selecionar-area.html` | Permite ao administrador escolher entre área de usuário e área administrativa. |
-| `dashboard.html` | Área do usuário: cadastro, solicitações, histórico e suporte. |
-| `admin.html` | Área administrativa: clientes, chamados, status e mensagens. |
+| `html/index.html` | Página pública de apresentação do projeto. Não exige login. |
+| `html/login.html` | Tela de entrada com e-mail e senha. |
+| `html/registro.html` | Cadastro da conta e dos dados do idoso, endereço e familiares. |
+| `html/reset-password.html` | Tela para definir uma nova senha. |
+| `html/selecionar-area.html` | Permite ao administrador escolher entre área de usuário e área administrativa. |
+| `html/dashboard.html` | Área do usuário: cadastro, solicitações, histórico e suporte. |
+| `html/admin.html` | Área administrativa: clientes, chamados, status e mensagens. |
 
 Os HTMLs carregam três tipos de recurso:
 
@@ -218,7 +218,7 @@ Familiares recebem a notificação configurada
 
 ## 11. Como ler o código sem se perder
 
-Comece pela tela que deseja entender e siga o arquivo JavaScript carregado no final dela. Depois identifique qual tabela do Supabase é consultada. Para uma emergência, siga `dashboard.html` → `dashboard.js` → Flask → tabela `acionamentos`.
+Comece pela tela que deseja entender em `html/` e siga o arquivo JavaScript carregado no final dela. Depois identifique qual tabela do Supabase é consultada. Para uma emergência, siga `html/dashboard.html` → `dashboard.js` → Flask → tabela `acionamentos`.
 
 Para uma emergência do equipamento físico, siga `firmware/esp8266_emergency.ino` → `backend/app.py` → `supabase-device.sql` → `admin.js`.
 

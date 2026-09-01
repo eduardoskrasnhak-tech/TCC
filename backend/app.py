@@ -8,13 +8,18 @@ import hashlib
 import hmac
 import os
 import smtplib
+from collections import defaultdict, deque
 from email.message import EmailMessage
 from datetime import datetime, timezone
+from functools import wraps
+from threading import Lock
+from time import monotonic
 
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from werkzeug.exceptions import RequestEntityTooLarge
 
 # ============================================================
 # CONFIGURAÇÃO DA APLICAÇÃO
@@ -22,11 +27,34 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["http://127.0.0.1:5500", "http://localhost:5500"]}})
+DEFAULT_CORS_ORIGINS = "http://127.0.0.1:5500,http://localhost:5500"
+CORS_ORIGINS = [origin.strip() for origin in os.getenv("CORS_ORIGINS", DEFAULT_CORS_ORIGINS).split(",") if origin.strip()]
+CORS(app, resources={r"/api/*": {
+    "origins": CORS_ORIGINS,
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization", "X-Device-Token", "X-Worker-Token"],
+    "max_age": 600,
+}})
+app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_REQUEST_BODY_BYTES", "16384"))
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 API_PREFIX = "/api/v1"
+_rate_limit_buckets = defaultdict(deque)
+_rate_limit_lock = Lock()
+
+
+@app.after_request
+def add_security_headers(response):
+    """Cabeçalhos seguros para as respostas da API (a interface web é hospedada separadamente)."""
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), payment=()"
+    response.headers["Cache-Control"] = "no-store"
+    if os.getenv("FORCE_HTTPS", "false").lower() == "true":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 
 # ============================================================
@@ -73,6 +101,31 @@ def enqueue_notification(occurrence, familiar, channel):
 
 def error(message, status=400):
     return jsonify({"ok": False, "error": message}), status
+
+
+@app.errorhandler(RequestEntityTooLarge)
+def request_too_large(_error):
+    return error("A requisição excede o tamanho permitido.", 413)
+
+
+def rate_limited(max_requests, window_seconds):
+    """Limite simples por IP e rota. Em produção, mantenha também o limite do proxy/rede."""
+    def decorator(handler):
+        @wraps(handler)
+        def wrapped(*args, **kwargs):
+            client = request.remote_addr or "unknown"
+            key = f"{request.endpoint}:{client}"
+            now = monotonic()
+            with _rate_limit_lock:
+                bucket = _rate_limit_buckets[key]
+                while bucket and now - bucket[0] >= window_seconds:
+                    bucket.popleft()
+                if len(bucket) >= max_requests:
+                    return error("Muitas tentativas. Aguarde um instante e tente novamente.", 429)
+                bucket.append(now)
+            return handler(*args, **kwargs)
+        return wrapped
+    return decorator
 
 
 def send_family_notifications(occurrence):
@@ -256,7 +309,28 @@ def save_user_event(payload, user_id):
     ids = supabase_request("GET", "idosos", params={"usuario_id": f"eq.{user_id}", "select": "id"})
     if not ids:
         raise RuntimeError("Nenhum idoso vinculado ao usuário")
-    occurrence = dict(payload); occurrence["idoso_id"] = ids[0]["id"]; occurrence["source"] = "site"
+    try:
+        latitude = float(payload["latitude"])
+        longitude = float(payload["longitude"])
+        occurred_at = datetime.fromisoformat(str(payload["occurred_at"]).replace("Z", "+00:00"))
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError("Coordenadas ou data/hora inválidas") from exc
+    if not -90 <= latitude <= 90 or not -180 <= longitude <= 180:
+        raise ValueError("Coordenadas inválidas")
+    if occurred_at.tzinfo is None:
+        occurred_at = occurred_at.replace(tzinfo=timezone.utc)
+    event_type = str(payload.get("event_type", ""))
+    status = str(payload.get("status", ""))
+    destinatarios = str(payload.get("destinatarios", "")).strip()
+    if (event_type, status) not in {("assistance", "Recebido"), ("emergency", "Emergência")}:
+        raise ValueError("Tipo ou status de chamado inválido")
+    if not destinatarios or len(destinatarios) > 300:
+        raise ValueError("Destinatários inválidos")
+    occurrence = {
+        "idoso_id": ids[0]["id"], "latitude": latitude, "longitude": longitude,
+        "occurred_at": occurred_at.astimezone(timezone.utc).isoformat(), "event_type": event_type,
+        "status": status, "destinatarios": destinatarios, "source": "site"
+    }
     saved = supabase_request("POST", "acionamentos", json=occurrence, headers={"Prefer": "return=representation"})
     return saved[0] if saved else occurrence
 
@@ -270,6 +344,7 @@ def health():
 
 
 @app.post(f"{API_PREFIX}/notifications/process")
+@rate_limited(10, 60)
 def process_notifications():
     """Endpoint exclusivo para agendador/servidor, nunca para o navegador."""
     if not worker_authorized():
@@ -281,11 +356,12 @@ def process_notifications():
         return error("O limite deve ser um número inteiro")
     try:
         return jsonify({"ok": True, "result": reprocess_notification_queue(limit=limit)})
-    except RuntimeError as exc:
-        return error(str(exc), 500)
+    except RuntimeError:
+        return error("Não foi possível processar a fila de notificações.", 500)
 
 
 @app.post(f"{API_PREFIX}/device/events")
+@rate_limited(60, 60)
 def receive_device_event():
     device_token = request.headers.get("X-Device-Token", "")
     payload = request.get_json(silent=True) or {}
@@ -310,8 +386,8 @@ def receive_device_event():
 
     try:
         devices = supabase_request("GET", "dispositivos", params={"device_id": f"eq.{payload['device_id']}", "ativo": "eq.true", "select": "device_id,idoso_id,token_hash"})
-    except RuntimeError as exc:
-        return error(str(exc), 500)
+    except RuntimeError:
+        return error("Não foi possível validar o dispositivo no momento.", 500)
     if not devices or not devices[0].get("idoso_id") or not hmac.compare_digest(devices[0].get("token_hash", ""), token_hash(device_token)):
         return error("Dispositivo não autorizado", 401)
 
@@ -330,17 +406,18 @@ def receive_device_event():
     }
     try:
         saved = supabase_request("POST", "acionamentos", json=occurrence, headers={"Prefer": "return=representation"})
-    except RuntimeError as exc:
-        return error(str(exc), 500)
+    except RuntimeError:
+        return error("Não foi possível registrar o evento no momento.", 500)
     saved_occurrence = saved[0] if saved else occurrence
     try:
         notification = dispatch_notifications(saved_occurrence)
-    except (OSError, smtplib.SMTPException, RuntimeError) as exc:
-        notification = {"sent": 0, "skipped": f"Falha no envio: {exc}"}
+    except (OSError, smtplib.SMTPException, RuntimeError):
+        notification = {"sent": 0, "skipped": "Falha temporária no envio de notificações"}
     return jsonify({"ok": True, "event": saved_occurrence, "notification": notification}), 201
 
 
 @app.post(f"{API_PREFIX}/user/events")
+@rate_limited(20, 60)
 def receive_user_event():
     user = authenticated_user()
     if not user:
@@ -353,11 +430,13 @@ def receive_user_event():
         occurrence = save_user_event(payload, user["id"])
         try:
             notification = dispatch_notifications(occurrence)
-        except (OSError, smtplib.SMTPException, RuntimeError) as exc:
-            notification = {"sent": 0, "skipped": f"Falha no envio: {exc}"}
+        except (OSError, smtplib.SMTPException, RuntimeError):
+            notification = {"sent": 0, "skipped": "Falha temporária no envio de notificações"}
         return jsonify({"ok": True, "event": occurrence, "notification": notification}), 201
-    except RuntimeError as exc:
-        return error(str(exc), 500)
+    except ValueError as exc:
+        return error(str(exc))
+    except RuntimeError:
+        return error("Não foi possível registrar o chamado no momento.", 500)
 
 
 if __name__ == "__main__":

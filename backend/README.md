@@ -55,3 +55,7 @@ curl -X POST http://localhost:5000/api/v1/notifications/process \
 ```
 
 Esse token fica somente no servidor/agendador e nunca no navegador.
+
+## Segurança para produção
+
+Antes de expor a API na internet, leia [SEGURANCA.md](../SEGURANCA.md). Em resumo: mantenha `FLASK_DEBUG=false`, use HTTPS, configure `CORS_ORIGINS` apenas com o domínio real do site e guarde todos os segredos somente no ambiente do servidor. A API aplica cabeçalhos de proteção, limite de corpo e limites básicos de requisição, mas a hospedagem deve complementar isso com proxy/WAF e rate limiting centralizado.

@@ -39,7 +39,7 @@ async function carregarMensagensUsuario() {
     const lista = document.getElementById("listaMinhasMensagens");
     if (!lista) return;
     const { data: mensagens, error } = await supabaseClient.from("mensagens").select("assunto,tipo,mensagem,resposta,status,criado_em,respondido_em").eq("usuario_id", usuarioAtual.id).order("criado_em", { ascending: false }).limit(20);
-    if (error) { lista.innerHTML = `<p class="estadoMensagens mensagemErro">Não foi possível carregar suas mensagens.</p>`; return; }
+    if (error) { lista.innerHTML = `<p class="estadoMensagens mensagemErro">Não foi possível carregar suas mensagens agora. Tente novamente em instantes.</p>`; return; }
     if (!mensagens?.length) { lista.innerHTML = '<p class="estadoMensagens">Você ainda não enviou nenhuma mensagem ao suporte.</p>'; return; }
     lista.innerHTML = mensagens.map(item => {
         const respondida = Boolean(item.resposta);
@@ -175,8 +175,17 @@ function configurarMelhoriasPainel() {
 // Esta versão mantém a consulta original e acrescenta os indicadores do painel.
 async function carregarPainel() {
     if (!idosoAtual) return;
-    const { data: chamados = [] } = await supabaseClient.from("acionamentos").select("*").eq("idoso_id", idosoAtual.id).order("criado_em", { ascending: false });
-    const { count: familiares } = await supabaseClient.from("familiares").select("id", { count: "exact", head: true }).eq("idoso_id", idosoAtual.id);
+    const [respostaChamados, respostaFamiliares] = await Promise.all([
+        supabaseClient.from("acionamentos").select("*").eq("idoso_id", idosoAtual.id).order("criado_em", { ascending: false }),
+        supabaseClient.from("familiares").select("id", { count: "exact", head: true }).eq("idoso_id", idosoAtual.id)
+    ]);
+    if (respostaChamados.error || respostaFamiliares.error) {
+        const lista = document.getElementById("listaChamados");
+        if (lista) lista.innerHTML = '<tr><td colspan="4">Não foi possível carregar os chamados agora. Tente novamente em instantes.</td></tr>';
+        return;
+    }
+    const chamados = respostaChamados.data || [];
+    const familiares = respostaFamiliares.count;
     chamadosDoUsuario = chamados;
     document.getElementById("totalChamados").textContent = chamados.length;
     document.getElementById("totalFamiliares").textContent = familiares || 0;
@@ -258,7 +267,7 @@ async function marcarChamadoResolvido() {
     if (!botao.dataset.chamado) return;
     botao.disabled = true;
     const { error } = await supabaseClient.from("acionamentos").update({ status: "Resolvido" }).eq("id", botao.dataset.chamado);
-    if (error) { alert(error.message); botao.disabled = false; return; }
+    if (error) { mostrarMensagem("mensagemSuporte", "Não foi possível concluir o chamado. Tente novamente.", "erro"); botao.disabled = false; return; }
     await carregarPainel();
 }
 

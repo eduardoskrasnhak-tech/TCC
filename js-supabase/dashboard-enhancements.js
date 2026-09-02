@@ -88,6 +88,7 @@
     async function atualizarSenha(evento) {
         evento.preventDefault();
         const password = document.getElementById("novaSenhaConta").value;
+        if (password.length < 8) { mensagem("mensagemSenhaConta", "Use uma senha com pelo menos 8 caracteres.", "erro"); return; }
         const { error } = await supabaseClient.auth.updateUser({ password });
         mensagem("mensagemSenhaConta", error ? error.message : "Senha atualizada com sucesso.", error ? "erro" : "sucesso");
         if (!error) evento.target.reset();

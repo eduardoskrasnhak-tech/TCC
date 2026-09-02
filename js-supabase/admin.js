@@ -37,17 +37,31 @@ async function inicializarAdmin() {
 }
 
 async function carregarAdmin() {
-    const { data: clientes = [] } = await supabaseClient.from("idosos").select("id,nome,cpf,telefone,rg,data_nascimento").order("criado_em", { ascending: false });
+    const [respostaClientes, respostaChamados, respostaMensagens] = await Promise.all([
+        supabaseClient.from("idosos").select("id,nome,cpf,telefone,rg,data_nascimento").order("criado_em", { ascending: false }),
+        supabaseClient.from("acionamentos").select("*, idosos(nome)").order("criado_em", { ascending: false }).limit(50),
+        supabaseClient.from("mensagens").select("*").order("criado_em", { ascending: false }).limit(30)
+    ]);
+    const erroCarregamento = respostaClientes.error || respostaChamados.error || respostaMensagens.error;
+    if (erroCarregamento) {
+        const aviso = "Não foi possível carregar os dados agora. Atualize a página ou tente novamente em instantes.";
+        document.getElementById("listaClientes").innerHTML = `<tr><td colspan="4">${aviso}</td></tr>`;
+        document.getElementById("listaChamadosAdmin").innerHTML = `<tr><td colspan="5">${aviso}</td></tr>`;
+        document.getElementById("listaMensagens").textContent = aviso;
+        return;
+    }
+    const clientes = respostaClientes.data || [];
+    const chamados = respostaChamados.data || [];
+    const mensagens = respostaMensagens.data || [];
     clientesAdmin = clientes;
-    const { data: chamados = [] } = await supabaseClient.from("acionamentos").select("*, idosos(nome)").order("criado_em", { ascending: false }).limit(50);
     chamadosAdmin = chamados.filter(deveExibirChamadoOperacional).slice(0, 10);
-    const { data: mensagens = [] } = await supabaseClient.from("mensagens").select("*").order("criado_em", { ascending: false }).limit(30);
     document.getElementById("totalClientes").textContent = clientes.length; document.getElementById("totalChamadosAdmin").textContent = chamadosAdmin.length; document.getElementById("totalMensagens").textContent = mensagens.filter(m => m.status === "aberta").length;
     document.getElementById("listaClientes").innerHTML = clientes.length ? clientes.map(c => `<tr data-cliente-id="${escaparHtmlAdmin(c.id)}"><td>${escaparHtmlAdmin(c.nome)}</td><td>${escaparHtmlAdmin(cpfProtegidoAdmin(c.cpf))}</td><td>${escaparHtmlAdmin(c.telefone)}</td><td><button class="botaoTabela" data-id="${escaparHtmlAdmin(c.id)}">Editar</button></td></tr>`).join("") : '<tr><td colspan="4">Nenhum cliente cadastrado.</td></tr>';
     document.querySelectorAll(".botaoTabela[data-id]").forEach(botao => botao.addEventListener("click", () => editarCliente(botao.dataset.id)));
     const statusSelecionado = document.getElementById("filtroStatus")?.value || "pendentes";
     const chamadosVisiveis = chamadosAdmin.filter(chamado => statusSelecionado === "todos" || (statusSelecionado === "pendentes" && chamado.status !== "Resolvido") || chamado.status === statusSelecionado || (statusSelecionado === "Emergência" && /emerg/i.test(chamado.status || "")));
-    renderizarChamados(chamadosVisiveis); renderizarMensagens(mensagens);
+    (window.renderizarChamados || renderizarChamados)(chamadosVisiveis);
+    (window.renderizarMensagens || renderizarMensagens)(mensagens);
 }
 
 // =====================================================

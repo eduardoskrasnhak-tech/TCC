@@ -1010,3 +1010,27 @@ body::before { opacity: .2; background-image: linear-gradient(rgba(93, 153, 214,
 .conteudoPrivacidade p { margin: 0; }
 @media (max-width: 800px) { .gradeSegurancaConta, .gradeRelatorios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .gradeSegurancaConta, .gradeRelatorios { grid-template-columns: 1fr; } .contatoExtra { align-items: stretch; flex-direction: column; } .formSegurancaConta .botaoSecundario { width: 100%; } }
+
+/* Acessibilidade e acabamento para telas estreitas. */
+:focus-visible { outline: 3px solid #8bc7ff; outline-offset: 3px; }
+button, a, input, select, textarea { touch-action: manipulation; }
+@media (max-width: 700px) {
+    .cabecalhoPainel { align-items: flex-start; flex-direction: column; gap: 14px; }
+    .cabecalhoPainel > div { align-items: center; flex-wrap: wrap; gap: 10px; width: 100%; }
+    .conteudoPainel { width: min(100% - 24px, 1100px); margin-top: 24px; }
+    .tituloPainel { text-align: left; }
+    .tituloPainel h1 { font-size: clamp(30px, 8vw, 38px); }
+    .painelCard, .resumoCard { padding: 18px; }
+    .tabelaPainel th, .tabelaPainel td { padding: 11px 9px; }
+}
+@media (max-width: 420px) {
+    .marcaPainel { font-size: 24px; }
+    .cabecalhoPainel > div { align-items: flex-start; flex-direction: column; }
+    .cabecalhoPainel .botaoSair { width: 100%; }
+    .tituloPainel p { font-size: 16px; }
+    .botaoEmergencia, .botaoFormulario, .botaoSecundario { max-width: 100%; }
+    .acoesCadastro, .acoesEdicaoAdmin, .acoesChamadoAtivo { gap: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}

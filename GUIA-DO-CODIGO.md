@@ -20,13 +20,13 @@ Os HTMLs carregam três tipos de recurso:
 
 ```html
 <!-- Aparência da página -->
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="../css/style.css">
 
 <!-- Biblioteca de autenticação -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- Configuração e regras do sistema -->
-<script src="js-supabase/supabase-config.js"></script>
+<script src="../js-supabase/supabase-config.js"></script>
 ```
 
 ## 2. JavaScript do navegador

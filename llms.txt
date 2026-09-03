@@ -1,0 +1,20 @@
+# P.R.O.T.E.G.E.
+
+> Projeto de tecnologia assistiva para ampliar a segurança, a autonomia e a mobilidade de pessoas idosas.
+
+## Site público
+
+- Página inicial: https://eduardoskrasnhak-tech.github.io/TCC/
+- Política de privacidade: https://eduardoskrasnhak-tech.github.io/TCC/html/politica-privacidade.html
+
+## Sobre o projeto
+
+P.R.O.T.E.G.E. significa Plataforma de Resposta Operacional para Transporte com Ênfase em Grupos Especiais. O sistema foi pensado para apoiar pessoas idosas, familiares, cuidadores e responsáveis em situações de necessidade.
+
+## Limites
+
+O projeto é uma ferramenta de apoio à comunicação. Não substitui serviços públicos de emergência, atendimento médico ou acompanhamento profissional.
+
+## Conteúdo privado
+
+As áreas de login, cadastro, usuário e administração não são conteúdo público e não devem ser indexadas ou resumidas.

@@ -1008,6 +1008,11 @@ body::before { opacity: .2; background-image: linear-gradient(rgba(93, 153, 214,
 .conteudoPrivacidade { display: grid; gap: 8px; margin: 22px 0; color: #c9d9e8; line-height: 1.6; }
 .conteudoPrivacidade h2 { margin: 12px 0 0; color: #f5f9ff; font-size: 19px; }
 .conteudoPrivacidade p { margin: 0; }
+.listaFaq { display: grid; gap: 10px; margin-top: 20px; }
+.listaFaq details { padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(5, 13, 24, .35); }
+.listaFaq summary { color: #f5f9ff; cursor: pointer; font-weight: 700; }
+.listaFaq details p { margin: 10px 0 0; color: #b9cde1; font-size: 16px; }
+.linkBotaoErro { display: inline-flex; width: auto; text-decoration: none; }
 @media (max-width: 800px) { .gradeSegurancaConta, .gradeRelatorios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .gradeSegurancaConta, .gradeRelatorios { grid-template-columns: 1fr; } .contatoExtra { align-items: stretch; flex-direction: column; } .formSegurancaConta .botaoSecundario { width: 100%; } }
 

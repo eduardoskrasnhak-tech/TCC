@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /html/login.html
+Disallow: /html/registro.html
+Disallow: /html/reset-password.html
+Disallow: /html/selecionar-area.html
+Disallow: /html/dashboard.html
+Disallow: /html/admin.html
+
+Sitemap: https://eduardoskrasnhak-tech.github.io/TCC/sitemap.xml

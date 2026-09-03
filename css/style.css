@@ -1057,3 +1057,10 @@ button, a, input, select, textarea { touch-action: manipulation; }
 .preferenciasCookiesAcoes { margin-top: 18px; }
 @media (max-width: 700px) { .bannerCookies { align-items: stretch; flex-direction: column; right: 10px; bottom: 10px; width: calc(100% - 20px); padding: 16px; } .bannerCookiesAcoes, .preferenciasCookiesAcoes { justify-content: stretch; } .bannerCookiesAcoes button, .preferenciasCookiesAcoes button { flex: 1 1 140px; } }
 @media (prefers-reduced-motion: reduce) { .linkPularConteudo { transition: none; } }
+.privacidadeConta .cabecalhoCard { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.privacidadeConta .cabecalhoCard .botaoSecundario { flex: 0 0 auto; text-decoration: none; }
+.privacidadeContaAcao { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 18px; padding: 16px; border: 1px solid rgba(215, 47, 98, .35); border-radius: 10px; background: rgba(215, 47, 98, .08); }
+.privacidadeContaAcao div { display: grid; gap: 4px; }
+.privacidadeContaAcao strong { color: #fff; }
+.privacidadeContaAcao span { color: #b9cde1; font-size: 14px; }
+@media (max-width: 600px) { .privacidadeConta .cabecalhoCard, .privacidadeContaAcao { align-items: stretch; flex-direction: column; } .privacidadeConta .cabecalhoCard .botaoSecundario, .privacidadeContaAcao .botaoSecundario { width: 100%; } }

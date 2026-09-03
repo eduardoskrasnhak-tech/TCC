@@ -32,7 +32,7 @@ Para executar a API Flask, consulte [`backend/README.md`](backend/README.md). A 
 
 ## Supabase
 
-As migrações ficam em `js-supabase/` e devem ser executadas no SQL Editor na ordem indicada pelo [`GUIA-DO-CODIGO.md`](GUIA-DO-CODIGO.md). Antes de colocar o sistema em produção, aplique também as políticas de segurança e revise as configurações de autenticação.
+As migrações ficam em `js-supabase/` e devem ser executadas no SQL Editor na ordem indicada pelo [`GUIA-DO-CODIGO.md`](GUIA-DO-CODIGO.md). A migração `supabase-privacidade.sql` cria os pedidos de acesso, correção e exclusão enviados pelo painel. Antes de colocar o sistema em produção, aplique também as políticas de segurança e revise as configurações de autenticação.
 
 ## Segurança e privacidade
 

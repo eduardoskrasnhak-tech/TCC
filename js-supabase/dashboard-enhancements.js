@@ -94,6 +94,15 @@
         if (!error) evento.target.reset();
     }
 
+    async function solicitarExclusaoDados() {
+        if (!usuarioAtual || !window.confirm("Deseja solicitar a exclusão dos seus dados? A equipe analisará o pedido antes de concluir.")) return;
+        const botao = document.getElementById("solicitarExclusaoDados");
+        if (botao) { botao.disabled = true; botao.textContent = "Enviando..."; }
+        const { error } = await supabaseClient.from("solicitacoes_privacidade").insert({ usuario_id: usuarioAtual.id, tipo: "exclusao", observacao: "Solicitação feita pelo painel do usuário." });
+        mensagem("statusPrivacidadeConta", error ? "Não foi possível registrar o pedido agora. Tente novamente mais tarde." : "Pedido registrado. A equipe analisará a solicitação e retornará pelo painel.", error ? "erro" : "sucesso");
+        if (botao) { botao.disabled = !error; botao.textContent = error ? "Solicitar exclusão" : "Pedido enviado"; }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".filtroMensagem").forEach(botao => botao.addEventListener("click", () => {
             filtroMensagem = botao.dataset.filtroMensagem;
@@ -112,6 +121,7 @@
         document.getElementById("adicionarContatoExtra")?.addEventListener("click", abrirFormularioContato);
         document.getElementById("formEmailConta")?.addEventListener("submit", atualizarEmail);
         document.getElementById("formSenhaConta")?.addEventListener("submit", atualizarSenha);
+        document.getElementById("solicitarExclusaoDados")?.addEventListener("click", solicitarExclusaoDados);
         let tentativas = 0;
         const aguardarUsuario = window.setInterval(() => { if (typeof usuarioAtual !== "undefined" && usuarioAtual) { carregarMensagensAprimoradas(); carregarContatosExtras(); window.clearInterval(aguardarUsuario); } else if (++tentativas > 30) window.clearInterval(aguardarUsuario); }, 300);
     });

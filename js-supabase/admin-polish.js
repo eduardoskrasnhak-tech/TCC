@@ -218,6 +218,16 @@
         carregarAuditoria();
     }
 
+    async function carregarPedidosPrivacidade() {
+        const lista = document.getElementById("listaPedidosPrivacidade");
+        if (!lista) return;
+        const { data, error } = await supabaseClient.from("solicitacoes_privacidade").select("id,usuario_id,tipo,status,criado_em").order("criado_em", { ascending: false }).limit(50);
+        if (error) { lista.innerHTML = '<tr><td colspan="5">Execute a migração de privacidade para ativar esta seção.</td></tr>'; return; }
+        const tipos = { exclusao: "Exclusão", acesso: "Acesso", correcao: "Correção" };
+        lista.innerHTML = data?.length ? data.map(item => `<tr><td>${esc(tipos[item.tipo] || item.tipo)}</td><td>${esc(item.usuario_id)}</td><td><select class="statusPedidoPrivacidade" data-id="${esc(item.id)}" aria-label="Status do pedido"><option value="pendente" ${item.status === "pendente" ? "selected" : ""}>Pendente</option><option value="em_analise" ${item.status === "em_analise" ? "selected" : ""}>Em análise</option><option value="concluida" ${item.status === "concluida" ? "selected" : ""}>Concluída</option><option value="cancelada" ${item.status === "cancelada" ? "selected" : ""}>Cancelada</option></select></td><td>${new Date(item.criado_em).toLocaleString("pt-BR")}</td><td><button class="botaoTabela salvarPedidoPrivacidade" data-id="${esc(item.id)}" type="button">Salvar</button></td></tr>`).join("") : '<tr><td colspan="5">Nenhum pedido de privacidade registrado.</td></tr>';
+        lista.querySelectorAll(".salvarPedidoPrivacidade").forEach(botao => botao.addEventListener("click", async () => { const seletor = lista.querySelector(`.statusPedidoPrivacidade[data-id="${botao.dataset.id}"]`); const { error: erro } = await supabaseClient.from("solicitacoes_privacidade").update({ status: seletor.value, atualizado_em: new Date().toISOString(), concluido_em: seletor.value === "concluida" ? new Date().toISOString() : null }).eq("id", botao.dataset.id); botao.textContent = erro ? "Tentar novamente" : "Salvo"; if (!erro) carregarPedidosPrivacidade(); }));
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("fecharDetalhesChamado")?.addEventListener("click", fecharDetalhes);
         document.getElementById("modalDetalhesChamado")?.addEventListener("click", event => { if (event.target.id === "modalDetalhesChamado") fecharDetalhes(); });
@@ -226,6 +236,8 @@
         carregarAuditoria();
         window.setTimeout(carregarDispositivos, 1800);
         window.setTimeout(carregarAuditoria, 1800);
+        carregarPedidosPrivacidade();
+        window.setInterval(carregarPedidosPrivacidade, 30000);
         document.getElementById("simularEmergencia")?.addEventListener("click", () => registrarAuditoria("simulação", "acionamentos", "Simulação de emergência iniciada"));
         document.getElementById("salvarAlteracoesChamados")?.addEventListener("click", () => registrarAuditoria("atualização", "acionamentos", "Alterações de status salvas"));
         document.getElementById("formEdicao")?.addEventListener("submit", () => registrarAuditoria("atualização", "idosos", "Cadastro de cliente atualizado"));

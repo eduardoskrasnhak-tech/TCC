@@ -467,8 +467,9 @@ def receive_user_event():
         except (OSError, smtplib.SMTPException, RuntimeError):
             notification = {"sent": 0, "skipped": "Falha temporária no envio de notificações"}
         return jsonify({"ok": True, "event": occurrence, "notification": notification}), 201
-    except ValueError as exc:
-        return error(str(exc))
+    except ValueError:
+        # Os detalhes da validação ficam somente no servidor; não devolvemos exceções ao cliente.
+        return error("Os dados do chamado são inválidos.")
     except RuntimeError:
         return error("Não foi possível registrar o chamado no momento.", 500)
 

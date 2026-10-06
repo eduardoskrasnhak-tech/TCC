@@ -22,6 +22,7 @@ def permitir_frontend_local(response):
         "http://localhost:5500",
         "http://127.0.0.1:5500",
         "http://192.168.3.3:5500",
+        "https://eduardoskrasnhak-tech.github.io",
     }
     if origem in origens_permitidas:
         response.headers["Access-Control-Allow-Origin"] = origem

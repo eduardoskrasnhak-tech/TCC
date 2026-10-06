@@ -93,8 +93,9 @@ def receber_alerta():
         "status": "SOS",
         "latitude": latitude,
         "longitude": longitude,
+        "google_maps": f"https://maps.google.com/?q={latitude},{longitude}",
     }
-    link_google_maps = f"https://maps.google.com/?q={latitude},{longitude}"
+    link_google_maps = alerta["google_maps"]
 
     with alerta_lock:
         ultimo_alerta = alerta

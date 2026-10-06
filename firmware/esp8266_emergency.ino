@@ -6,14 +6,13 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <WiFiClientSecureBearSSL.h>
 #include <TinyGPSPlus.h>
 #include <SoftwareSerial.h>
 
 const char* WIFI_SSID = "COLE_SUA_REDE";
 const char* WIFI_PASSWORD = "COLE_SUA_SENHA";
-const char* API_URL = "http://SEU_SERVIDOR:5000/api/v1/device/events";
-const char* DEVICE_TOKEN = "COLE_UM_TOKEN_LONGO";
-const char* DEVICE_ID = "protege-001";
+const char* API_URL = "https://tcc-9vom.onrender.com/alerta";
 
 const uint8_t BUTTON_PIN = D5;
 const uint8_t GPS_RX_PIN = D6;
@@ -44,15 +43,14 @@ void loop() {
 // MONTAGEM E ENVIO DO EVENTO
 // =====================================================
 void enviarEmergencia() {
-  if (WiFi.status() != WL_CONNECTED || !gps.location.isValid() || !gps.date.isValid() || !gps.time.isValid()) return;
-  WiFiClient client;
+  if (WiFi.status() != WL_CONNECTED || !gps.location.isValid()) return;
+  BearSSL::WiFiClientSecure client;
+  client.setInsecure();
   HTTPClient http;
   if (!http.begin(client, API_URL)) return;
   http.addHeader("Content-Type", "application/json");
-  http.addHeader("X-Device-Token", DEVICE_TOKEN);
-  char timestamp[25];
-  snprintf(timestamp, sizeof(timestamp), "%04d-%02d-%02dT%02d:%02d:%02dZ", gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour(), gps.time.minute(), gps.time.second());
-  String payload = "{\"device_id\":\"" + String(DEVICE_ID) + "\",\"latitude\":" + String(gps.location.lat(), 6) + ",\"longitude\":" + String(gps.location.lng(), 6) + ",\"occurred_at\":\"" + String(timestamp) + "\",\"event_type\":\"emergency\",\"status\":\"received\"}";
-  http.POST(payload);
+  String payload = "{\"status\":\"SOS\",\"latitude\":" + String(gps.location.lat(), 6) + ",\"longitude\":" + String(gps.location.lng(), 6) + "}";
+  int resposta = http.POST(payload);
+  Serial.printf("Resposta do Flask: %d\n", resposta);
   http.end();
 }

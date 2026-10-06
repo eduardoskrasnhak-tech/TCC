@@ -6,30 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta name="robots" content="noindex, nofollow">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://agysrflxstkranxznxxt.supabase.co wss://agysrflxstkranxznxxt.supabase.co http://localhost:5000 http://127.0.0.1:5000; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://agysrflxstkranxznxxt.supabase.co wss://agysrflxstkranxznxxt.supabase.co http://localhost:5000 http://127.0.0.1:5000 https://tcc-9vom.onrender.com; object-src 'none'; base-uri 'self'; form-action 'self'">
     <title>Painel do usuário | P.R.O.T.E.G.E.</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body class="paginaPainel paginaUsuario">
+    <!-- Cabeçalho do painel do usuário e atalhos de navegação. -->
     <header class="cabecalhoPainel"><a class="marcaPainel" href="index.html">P.R.O.T.E.G.E.</a>
         <div><a id="linkAdmin" class="linkPainel" href="admin.html" hidden>Administração</a><span
                 id="usuarioLogado"></span><button id="botaoSair" class="botaoSair">Sair</button></div>
     </header>
     <main class="conteudoPainel">
+        <!-- Resumo da conta e ação principal de assistência. -->
         <div class="tituloPainel">
             <div>
                 <p class="etiquetaPainel">ÁREA DO USUÁRIO</p>
                 <h1>Olá, <span id="nomeUsuario">usuário</span></h1>
                 <p>Acompanhe a segurança e os atendimentos do idoso.</p>
-            </div><button id="botaoAssistenciaPainel" class="botaoEmergencia">Solicitar assistência</button>
+            </div>
+            <div class="controlesResumo">
+                <section class="gradeResumo">
+                    <article class="resumoCard"><span>Chamados realizados</span><strong id="totalChamados">0</strong><small>Solicitações de assistência feitas</small></article>
+                    <article class="resumoCard"><span>Último chamado</span><strong id="ultimoChamado">Nenhum</strong><small>Última solicitação registrada</small></article>
+                    <article class="resumoCard"><span>Familiares cadastrados</span><strong id="totalFamiliares">0</strong><small>Contatos que recebem alertas</small></article>
+                </section>
+                <button id="botaoAssistenciaPainel" class="botaoEmergencia">Solicitar assistência</button>
+            </div>
         </div>
-        <section class="gradeResumo">
-            <article class="resumoCard"><span>Chamados realizados</span><strong id="totalChamados">0</strong><small>Solicitações de assistência feitas</small></article>
-            <article class="resumoCard"><span>Último chamado</span><strong id="ultimoChamado">Nenhum</strong><small>Última solicitação registrada</small></article>
-            <article class="resumoCard"><span>Familiares cadastrados</span><strong id="totalFamiliares">0</strong><small>Contatos que recebem alertas</small>
-            </article>
-        </section>
+        <!-- Informações de conexão, localização e bateria do dispositivo. -->
         <section class="painelCard cardDispositivo" aria-labelledby="tituloDispositivo">
             <div class="cabecalhoCard"><div><h2 id="tituloDispositivo">Status do dispositivo</h2><p>Acompanhe a conexão do equipamento e do GPS.</p></div><span class="statusPainel statusAtencao">Integração em preparação</span></div>
             <div class="statusDispositivoGrid">
@@ -208,6 +213,7 @@
     <script src="../js-supabase/mascaras-cadastro.js"></script>
     <script src="../js-supabase/dashboard.js"></script>
     <script src="../js-supabase/dashboard-enhancements.js"></script>
+    <script src="../js-supabase/dispositivo-api.js"></script>
     <script src="../js-supabase/cookies.js"></script>
     <script src="../js-supabase/acessibilidade.js"></script>
 </body>
